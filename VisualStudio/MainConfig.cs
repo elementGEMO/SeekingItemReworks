@@ -34,6 +34,7 @@ namespace SeekingItemReworks
         // Chronic Expansion
         public static ConfigEntry<bool> KnockbackFinReworkEnabled;
 
+        public static ConfigEntry<bool> CKF_Hyperbolic;
         public static ConfigEntry<float> CKF_KBase;
         public static ConfigEntry<float> CKF_KStack;
         public static ConfigEntry<float> CKF_DBase;
@@ -58,6 +59,7 @@ namespace SeekingItemReworks
 
             KnockbackFinReworkEnabled = plugin.Config.Bind("Knockback Fin", "Enable Rework?", true, "Changes Knockback Fin by reducing knock chances, and adds extra damage to airborne enemies.");
 
+            CKF_Hyperbolic = plugin.Config.Bind("Knockback Fin", "! Hyperbolic Scaling !", true, "[ Applies to Rework Only ]\nKnockback Fin's proc chance is hyperbolic, though this is an option to toggle it.\n");
             CKF_KBase = plugin.Config.Bind("Knockback Fin", "! Knock Base Stack !", 5.0f, "[ Applies to Rework Only ]\nThe base percentage chance to trigger.\n- 5.0 = 5% chance to trigger.\n");
             CKF_KStack = plugin.Config.Bind("Knockback Fin", "! Knock Stack !", 2.0f, "[ Applies to Rework Only ]\nThe extra percentage chance to trigger when stacking.\n- 2.0 = +2% per stack to trigger.\n");
             CKF_DBase = plugin.Config.Bind("Knockback Fin", "! Damage Base Stack !", 10.0f, "[ Applies to Rework Only ]\nThe damage percentage to airborne enemies.\n- 10.0 = 10% extra damage to airborne enemies.\n");

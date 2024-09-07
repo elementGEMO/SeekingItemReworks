@@ -217,7 +217,82 @@ namespace SeekerItems
             {
                 //DamageColorIndex colorIndex = (DamageColorIndex) DamageColor.colors.Length;
                 //DamageColor.colors = DamageColor.colors.AddItem(new Color(0.4f, 0.65f, 1)).ToArray();
-                
+
+                IL.RoR2.GlobalEventManager.ProcessHitEnemy += il =>
+                {
+                    var cursor = new ILCursor(il);
+                    if (cursor.TryGotoNext(
+                        /*
+                        x => x.MatchBrfalse(out _),
+                        x => x.MatchLdloc(out _),
+                        x => x.MatchLdarg(0),
+                        x => x.MatchCallOrCallvirt<HealthComponent>("get_fullCombinedHealth")
+                        */
+
+                        x => x.MatchLdarg(2), // 2384 ldarg.2
+                        x => x.MatchCallvirt(typeof(UnityEngine.GameObject), nameof(UnityEngine.GameObject.GetComponent)),
+                        x => x.MatchStloc(out _),
+                        x => x.MatchLdarg(2)
+                    ))
+                    {
+                        // End to 2509
+                        cursor.RemoveRange(126);
+                        cursor.Emit(OpCodes.Ldarg_1);
+                        cursor.Emit(OpCodes.Ldarg_2);
+                        //cursor.Emit(OpCodes.)
+
+                        cursor.EmitDelegate<Action<DamageInfo, GameObject>>((damageInfo, victim) =>
+                        {
+                            CharacterBody victimBody = victim.GetComponent<CharacterBody>();
+                            CharacterBody attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
+                            CharacterMotor victimMotor = victim.GetComponent<CharacterMotor>();
+                            victim.GetComponent<RigidbodyMotor>();
+
+                            int itemCount = attackerBody.inventory.GetItemCount(DLC2Content.Items.KnockBackHitEnemies);
+                            float procChance = (float)MainConfig.CKF_KBase.Value + (MainConfig.CKF_KStack.Value * (itemCount - 1)) * damageInfo.procCoefficient;
+
+                            if (MainConfig.CKF_Hyperbolic.Value)
+                            {
+                                procChance = Util.ConvertAmplificationPercentageIntoReductionPercentage(procChance);
+                            }
+                            if (victimMotor && victimMotor.isGrounded && !victimBody.isChampion && (victimBody.bodyFlags & CharacterBody.BodyFlags.IgnoreFallDamage) == CharacterBody.BodyFlags.None && !victimBody.HasBuff(DLC2Content.Buffs.KnockUpHitEnemies) && Util.CheckRoll(procChance, 0f, null))
+                            {
+                                victimBody.AddTimedBuff(DLC2Content.Buffs.KnockUpHitEnemies, 5f);
+                                float scale = 1f;
+                                switch (victimBody.hullClassification)
+                                {
+                                    case HullClassification.Human:
+                                        scale = 1f;
+                                        break;
+                                    case HullClassification.Golem:
+                                        scale = 5f;
+                                        break;
+                                    case HullClassification.BeetleQueen:
+                                        scale = 10f;
+                                        break;
+                                }
+                                EffectManager.SpawnEffect(GlobalEventManager.CommonAssets.knockbackFinEffect, new EffectData
+                                {
+                                    origin = victimBody.gameObject.transform.position,
+                                    scale = scale
+                                }, true);
+                                if (!victimBody.mainHurtBox)
+                                {
+                                    Transform transform = victimBody.transform;
+                                }
+                                else
+                                {
+                                    Transform transform2 = victimBody.mainHurtBox.transform;
+                                }
+                                Vector3 a = new(0, 1f, 0);
+                                float victimMass = victimMotor.mass * 25f;
+                                victimMotor.ApplyForce(victimMass * a, false, false);
+                                Util.PlaySound("Play_item_proc_knockBackHitEnemies", attackerBody.gameObject);
+                            }
+                        });
+                    }
+                };
+
                 IL.RoR2.HealthComponent.TakeDamageProcess += il =>
                 {
                     var cursor = new ILCursor(il);
@@ -241,7 +316,7 @@ namespace SeekerItems
                             int finCount = characterBody.inventory.GetItemCount(DLC2Content.Items.KnockBackHitEnemies);
                             if (finCount > 0)
                             {
-                                if (healthComponent.body.characterMotor == null || (healthComponent.body.characterMotor != null && !healthComponent.body.characterMotor.isGrounded))
+                                if (healthComponent.body.isFlying || (healthComponent.body.characterMotor != null && !healthComponent.body.characterMotor.isGrounded))
                                 {
                                     modDamage *= (float) 1.0f + (MainConfig.CKF_KBase.Value + (finCount - 1) * MainConfig.CKF_KStack.Value) / 100.0f;
                                     EffectManager.SimpleImpactEffect(HealthComponent.AssetReferences.mercExposeConsumeEffectPrefab, damageInfo.position, Vector3.up, true);
