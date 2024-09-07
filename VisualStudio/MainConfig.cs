@@ -34,6 +34,11 @@ namespace SeekingItemReworks
         // Chronic Expansion
         public static ConfigEntry<bool> KnockbackFinReworkEnabled;
 
+        public static ConfigEntry<float> CKF_KBase;
+        public static ConfigEntry<float> CKF_KStack;
+        public static ConfigEntry<float> CKF_DBase;
+        public static ConfigEntry<float> CKF_DStack;
+
         public static void CommonConfig(BaseUnityPlugin plugin)
         {
             RoundNumber = plugin.Config.Bind("! General !", "Item Description Round", 0, "Decides what decimal spot to round to.\n- 0 = Whole, 1 = Tenth, 2 = Hundredths, 3 = ...\n");
@@ -44,14 +49,19 @@ namespace SeekingItemReworks
 
             CWE_Cap = plugin.Config.Bind("Warped Echo", "! Damage Cap !", 1.0f, "[ Applies to Rework & Bugfix ]\nThe percentage at which damage can't exceed the current health.\n - 1.0 = Damage can't be over 100% of health.\n");
             CWE_Delay = plugin.Config.Bind("Warped Echo", "! Base Delay !", 3.0f, "[ Applies to Rework Only ]\nThe base time for delayed damage triggering.\n- 3.0 = Damage delayed for 3 seconds.\n");
-            CWE_Stack = plugin.Config.Bind("Warped Echo", "! Stack Delay !", 1.5f, "[ Applies to Rework Only ]\nThe additional time for delayed damage triggering when stacking.\n- 1.5 = Damage delayed for +1.5 seconds with each stack.\n");
+            CWE_Stack = plugin.Config.Bind("Warped Echo", "! Stack Delay !", 1.5f, "[ Applies to Rework Only ]\nThe extra time for delayed damage triggering when stacking.\n- 1.5 = Damage delayed for +1.5 seconds with each stack.\n");
             
             ChronicExpansionReworkEnabled = plugin.Config.Bind("Chronic Expansion", "Enable Rework?", true, "Changes Chronic Expansion by slightly nerfing the values and replacing current stacking with a proper formula.");
 
             CCE_Base = plugin.Config.Bind("Chronic Expansion", "! Base Stack !", 7.0f, "[ Applies to Rework Only ]\nThe base percentage damage for one buff.\n- 3.0 = Damage delayed for 3 seconds.\n");
-            CCE_Stack = plugin.Config.Bind("Chronic Expansion", "! Stack  !", 5.0f, "[ Applies to Rework Only ]\nThe additional percentage damage for one buff when stacking.\n- 1.5 = Damage delayed for +1.5 seconds with each stack.\n");
+            CCE_Stack = plugin.Config.Bind("Chronic Expansion", "! Stack !", 5.0f, "[ Applies to Rework Only ]\nThe extra percentage damage for one buff when stacking.\n- 1.5 = Damage delayed for +1.5 seconds with each stack.\n");
 
             KnockbackFinReworkEnabled = plugin.Config.Bind("Knockback Fin", "Enable Rework?", true, "Changes Knockback Fin by reducing knock chances, and adds extra damage to airborne enemies.");
+
+            CKF_KBase = plugin.Config.Bind("Knockback Fin", "! Knock Base Stack !", 5.0f, "[ Applies to Rework Only ]\nThe base percentage chance to trigger.\n- 5.0 = 5% chance to trigger.\n");
+            CKF_KStack = plugin.Config.Bind("Knockback Fin", "! Knock Stack !", 2.0f, "[ Applies to Rework Only ]\nThe extra percentage chance to trigger when stacking.\n- 2.0 = +2% per stack to trigger.\n");
+            CKF_DBase = plugin.Config.Bind("Knockback Fin", "! Damage Base Stack !", 10.0f, "[ Applies to Rework Only ]\nThe damage percentage to airborne enemies.\n- 10.0 = 10% extra damage to airborne enemies.\n");
+            CKF_DStack = plugin.Config.Bind("Knockback Fin", "! Damage Stack !", 10.0f, "[ Applies to Rework Only ]\nThe extra damage percentage to airborne enemies when stacking.\n- 10.0 = +10% extra damage per stack to airborne enemies.\n");
         }
     }
 }

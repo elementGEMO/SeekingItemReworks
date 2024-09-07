@@ -6,11 +6,13 @@ namespace SeekingItemReworks
 {
     internal class RiskItem
     {
-        public string ItemInternal;
-        public string ItemInfo;
-        public string ItemDesc;
-        public string ItemInfoAlt;
-        public string ItemDescAlt;
+        public static int roundVal = MainConfig.RoundNumber.Value;
+
+        private string ItemInternal;
+        private string ItemInfo;
+        private string ItemDesc;
+        private string ItemInfoAlt;
+        private string ItemDescAlt;
 
         public RiskItem(string itemInternal, string itemInfo, string itemDesc, string itemInfoAlt = "", string itemDescAlt = "")
         {

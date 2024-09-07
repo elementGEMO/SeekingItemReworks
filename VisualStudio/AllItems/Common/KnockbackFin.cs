@@ -5,14 +5,15 @@ namespace SeekingItemReworks.AllItems.Common
 {
     internal class KnockbackFin : RiskItem
     {
-        //static readonly string descOne = $"{MainConfig.CWE_Delay.Value.ToString($"F{MainConfig.RoundNumber.Value}")}";
-        //static readonly string descTwo = $"{MainConfig.CWE_Stack.Value.ToString($"F{MainConfig.RoundNumber.Value}")}";
         public KnockbackFin() : base(
             "KNOCKBACKHITENEMIES",
             "Chance on hit to knock enemies into the air.\nDeal bonus damage to airborne enemies.",
-            "5% (+2% per stack) chance on hit to knock enemies into the air. Deal +10% (+10% per stack) damage to airborne enemies.",
+            string.Format("{0}% ".Style(Color.cIsUtility) + "(+{1}% per stack) ".Style(Color.cStack) + "chance on hit to " + "knock enemies into the air".Style(Color.cIsUtility) + ". Deal " + "+{2}% ".Style(Color.cIsDamage) + "(+{3}% per stack) ".Style(Color.cStack) + "damage to " + "airborne ".Style(Color.cIsUtility) + "enemies.",
+                Math.Round(MainConfig.CKF_KBase.Value, roundVal), Math.Round(MainConfig.CKF_KStack.Value, roundVal), Math.Round(MainConfig.CKF_DBase.Value, roundVal), Math.Round(MainConfig.CKF_DStack.Value, roundVal)),
+
             "Chance on hit to knock up enemies.\nDeal bonus damage to airborne enemies.",
-            "5% (+2% per stack) chance on hit to knock up enemies. Deal +10% (+10% per stack) damage to airborne enemies."
+            string.Format("{0}% ".Style(Color.cIsUtility) + "(+{1}% per stack) ".Style(Color.cStack) + "chance on hit to " + "knock up enemies".Style(Color.cIsUtility) + ". Deal " + "+{2}% ".Style(Color.cIsDamage) + "(+{3}% per stack) ".Style(Color.cStack) + "damage to " + "airborne ".Style(Color.cIsUtility) + "enemies.",
+                Math.Round(MainConfig.CKF_KBase.Value, roundVal), Math.Round(MainConfig.CKF_KStack.Value, roundVal), Math.Round(MainConfig.CKF_DBase.Value, roundVal), Math.Round(MainConfig.CKF_DStack.Value, roundVal))
         ) { }
     }
 }

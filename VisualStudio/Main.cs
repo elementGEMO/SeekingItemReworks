@@ -8,6 +8,8 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 
 using SeekingItemReworks;
+using HarmonyLib;
+using System.Linq;
 
 namespace SeekerItems
 {
@@ -42,13 +44,6 @@ namespace SeekerItems
                 BuffDef delayDmgBuff = Addressables.LoadAsset<BuffDef>("RoR2/DLC2/Items/DelayedDamage/bdDelayedDamageBuff.asset").WaitForCompletion();
                 delayDmgBuff.canStack = false;
 
-                // Sets initial delay value.
-                /* On.RoR2.CharacterBody.Start += (orig, self) =>
-                {
-                    orig(self);
-                    self.secondHalfOfDamageTime = MainConfig.CWE_Delay.Value;
-                }; */
-
                 // Makes Delayed Damage delay duration stack instead.
                 IL.RoR2.CharacterBody.SecondHalfOfDelayedDamage += il =>
                 {
@@ -61,10 +56,7 @@ namespace SeekerItems
                     ))
                     {
                         cursor.Emit(OpCodes.Ldarg_0);
-                        cursor.EmitDelegate<Action<CharacterBody>>(body =>
-                        {
-                            body.SetBuffCount(DLC2Content.Buffs.DelayedDamageBuff.buffIndex, 0);
-                        });
+                        cursor.EmitDelegate<Action<CharacterBody>>(body => body.SetBuffCount(DLC2Content.Buffs.DelayedDamageBuff.buffIndex, 0));
 
                         if (cursor.TryGotoNext(
                             x => x.MatchLdloc(0),
@@ -223,27 +215,47 @@ namespace SeekerItems
             // Knockback Fin Rework
             if (MainConfig.KnockbackFinReworkEnabled.Value)
             {
+                //DamageColorIndex colorIndex = (DamageColorIndex) DamageColor.colors.Length;
+                //DamageColor.colors = DamageColor.colors.AddItem(new Color(0.4f, 0.65f, 1)).ToArray();
+                
                 IL.RoR2.HealthComponent.TakeDamageProcess += il =>
                 {
                     var cursor = new ILCursor(il);
                     if (cursor.TryGotoNext(
+                        x => x.MatchBrfalse(out _),
+                        x => x.MatchLdloc(out _),
                         x => x.MatchLdarg(0),
-                        x => x.MatchLdfld<HealthComponent>(nameof(HealthComponent.body)),
-                        x => x.MatchCallvirt<CharacterBody>("get_isBoss")
+                        x => x.MatchCallOrCallvirt<HealthComponent>("get_fullCombinedHealth")
                     ))
                     {
-                        cursor.Emit(OpCodes.Ldloc_0);
-                        cursor.Emit(OpCodes.Ldarg_0);
-                        cursor.EmitDelegate<Action<CharacterMaster, HealthComponent>>((characterMaster, healthComponent) =>
+                        cursor.Index++;
+                        cursor.Emit(OpCodes.Ldloc_1); // characterMaster
+                        cursor.Emit(OpCodes.Ldarg_0); // this (HealthComponent)
+                        cursor.Emit(OpCodes.Ldarg_1); // damageInfo
+                        cursor.Emit(OpCodes.Ldloc_S, (byte)7); // num3 (damageInfo.damage)
+
+                        cursor.EmitDelegate<Func<CharacterBody, HealthComponent, DamageInfo, float, float>>((characterBody, healthComponent, damageInfo, damage) =>
                         {
-                            if (healthComponent.body)
+                            
+                            float modDamage = damage;
+                            int finCount = characterBody.inventory.GetItemCount(DLC2Content.Items.KnockBackHitEnemies);
+                            if (finCount > 0)
                             {
-                                Logger.LogMessage("Hit?");
+                                if (healthComponent.body.characterMotor == null || (healthComponent.body.characterMotor != null && !healthComponent.body.characterMotor.isGrounded))
+                                {
+                                    modDamage *= (float) 1.0f + (MainConfig.CKF_KBase.Value + (finCount - 1) * MainConfig.CKF_KStack.Value) / 100.0f;
+                                    EffectManager.SimpleImpactEffect(HealthComponent.AssetReferences.mercExposeConsumeEffectPrefab, damageInfo.position, Vector3.up, true);
+                                }
                             }
+                            return modDamage;
                         });
+                        cursor.Emit(OpCodes.Stloc_S, (byte)7);
+                    }
+                    else
+                    {
+                        Logger.LogWarning("Knockback Fin - Failure to hook damage");
                     }
                 };
-
             }
         }
     }
