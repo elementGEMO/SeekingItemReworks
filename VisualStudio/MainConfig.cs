@@ -9,7 +9,10 @@ namespace SeekerItems
         {
             GenericConfig(plugin);
             CommonConfig(plugin);
+            UncommonConfig(plugin);
             LegendaryConfig(plugin);
+            EquipmentConfig(plugin);
+            MiscConfig(plugin);
         }
 
         // General Config
@@ -68,6 +71,24 @@ namespace SeekerItems
             CKF_DStack = plugin.Config.Bind("Knockback Fin", "! Damage Stack !", 10.0f, "[ Applies to Rework Only ]\nThe extra damage percentage to airborne enemies when stacking.\n- 10.0 = +10% extra damage per stack to airborne enemies.\n");
         }
 
+        // Unstable Transmitter
+        public static ConfigEntry<bool> UnstableTransmitterReworkEnabled;
+
+        public static ConfigEntry<float> UUT_BBase;
+        public static ConfigEntry<float> UUT_BStack;
+        public static ConfigEntry<float> UUT_DBase;
+        public static ConfigEntry<float> UUT_DStack;
+
+        public static void UncommonConfig(BaseUnityPlugin plugin)
+        {
+            UnstableTransmitterReworkEnabled = plugin.Config.Bind("Unstable Transmitter", "Enable Rework?", true, "Changes Unstable Transmitter to instead burst in bleed damage, and become intangible.");
+
+            UUT_BBase = plugin.Config.Bind("Unstable Transmitter", "! Base Bleed !", 100.0f, "[ Applies to Rework Only ]\nHow much base damage bleed does.\n-\n 100.0 = 100%.\n");
+            UUT_BStack = plugin.Config.Bind("Unstable Transmitter", "! Stack Bleed !", 50.0f, "[ Applies to Rework Only ]\nHow much additional base damage bleed does when stacking.\n-\n 50.0 = +50% per stack.\n");
+            UUT_DBase = plugin.Config.Bind("Unstable Transmitter", "! Base Duration !", 2.0f, "[ Applies to Rework Only ]\nHow long intangibility lasts.\n-\n 2.0f = 2 seconds.\n");
+            UUT_DStack = plugin.Config.Bind("Unstable Transmitter", "! Stack Duration !", 0.5f, "[ Applies to Rework Only ]\nHow long intangibility lasts when stacking.\n-\n 0.5f = +0.5 seconds.\n");
+        }
+
         // War Bonds
         public static ConfigEntry<bool> WarBondsReworkEnabled;
         public static ConfigEntry<bool> WarBondsReplaceVFX;
@@ -86,6 +107,22 @@ namespace SeekerItems
             LWB_PStack = plugin.Config.Bind("War Bonds", "! Purchase Stack !", 2, "[ Applies to Rework Only ]\nHow much more free purchases per stack.\n-\n 2 = +2 free purchases per stack.\n");
             LWB_EBase = plugin.Config.Bind("War Bonds", "! Experience Base Stack !", 20.0f, "[ Applies to Rework Only ]\nBase conversion at base.\n-\n 10.0 = 20% converted experience.\n");
             LWB_EStack = plugin.Config.Bind("War Bonds", "! Experience Stack !", 10.0f, "[ Applies to Rework Only ]\nMore conversion per stack.\n-\n 10.0 = +10% converted experience per stack.\n");
+        }
+
+        // Seed of Life
+        public static ConfigEntry<bool> SeedOfLifeRewriteEnabled;
+
+        public static void EquipmentConfig(BaseUnityPlugin plugin)
+        {
+            SeedOfLifeRewriteEnabled = plugin.Config.Bind("Seed of Life", "Enable Rewrite?", true, "Changes Seed of Life, simplifying the pickup, and expands the description.");
+        }
+
+        // Ben's Raincoat
+        public static ConfigEntry<bool> SkillDisableCleansable;
+
+        public static void MiscConfig(BaseUnityPlugin plugin)
+        {
+            SkillDisableCleansable = plugin.Config.Bind("! Misc !", "Bens Raincoat Cleansing Skill Disable", false, "Lets Ben's Raincoat able to cleanse False Son's skill disable debuff.\nReally, any cleanse item works now.");
         }
     }
 }

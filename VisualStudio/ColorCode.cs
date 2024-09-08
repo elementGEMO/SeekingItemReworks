@@ -7,7 +7,8 @@
             cStack,
             cIsDamage,
             cIsHealth,
-            cIsUtility
+            cIsUtility,
+            cIsHealing
         };
 
         public static string Style(this string self, Color style)

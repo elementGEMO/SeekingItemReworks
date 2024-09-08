@@ -9,6 +9,7 @@ using UnityEngine.AddressableAssets;
 
 using SeekingItemReworks;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace SeekerItems
 {
@@ -32,7 +33,9 @@ namespace SeekerItems
             Items.Init();
 
             SetUpCommonItems();
+            SetUpUncommonItems();
             SetUpLegendaryItems();
+            SetUpMisc();
         }
 
         private void SetUpCommonItems()
@@ -215,20 +218,11 @@ namespace SeekerItems
             // Knockback Fin Rework
             if (MainConfig.KnockbackFinReworkEnabled.Value)
             {
-                //DamageColorIndex colorIndex = (DamageColorIndex) DamageColor.colors.Length;
-                //DamageColor.colors = DamageColor.colors.AddItem(new Color(0.4f, 0.65f, 1)).ToArray();
 
                 IL.RoR2.GlobalEventManager.ProcessHitEnemy += il =>
                 {
                     var cursor = new ILCursor(il);
                     if (cursor.TryGotoNext(
-                        /*
-                        x => x.MatchBrfalse(out _),
-                        x => x.MatchLdloc(out _),
-                        x => x.MatchLdarg(0),
-                        x => x.MatchCallOrCallvirt<HealthComponent>("get_fullCombinedHealth")
-                        */
-
                         x => x.MatchLdarg(2), // 2384 ldarg.2
                         x => x.MatchCallvirt(typeof(UnityEngine.GameObject), nameof(UnityEngine.GameObject.GetComponent)),
                         x => x.MatchStloc(out _),
@@ -239,7 +233,6 @@ namespace SeekerItems
                         cursor.RemoveRange(126);
                         cursor.Emit(OpCodes.Ldarg_1);
                         cursor.Emit(OpCodes.Ldarg_2);
-                        //cursor.Emit(OpCodes.)
 
                         cursor.EmitDelegate<Action<DamageInfo, GameObject>>((damageInfo, victim) =>
                         {
@@ -333,6 +326,69 @@ namespace SeekerItems
                 };
             }
         }
+        private void SetUpUncommonItems()
+        {
+            // Unstable Transmitter Rework
+            if (MainConfig.UnstableTransmitterReworkEnabled.Value)
+            {
+                // Transmitter Effect Buff
+                new TransmitterEffect();
+
+                // Bleed area effect, and intangibility
+                IL.RoR2.CharacterBody.RpcTeleportCharacterToSafety += il =>
+                {
+                    var cursor = new ILCursor(il);
+                    if (cursor.TryGotoNext(
+                        x => x.MatchLdarg(0), // 0
+                        x => x.MatchCall<CharacterBody>("get_hasEffectiveAuthority")
+                    ))
+                    {
+                        cursor.RemoveRange(176); // Remove @ 175
+                        cursor.Emit(OpCodes.Ldarg_0);
+                        cursor.EmitDelegate<Action<CharacterBody>>(body =>
+                        {
+                            if (!body.hasEffectiveAuthority)
+                            {
+                                return;
+                            }
+                            body.AddTimedBuff(TransmitterEffect.getTransmitterDef(), 2.0f);
+                            EffectManager.SpawnEffect(CharacterBody.CommonAssets.teleportOnLowHealthExplosion, new EffectData
+                            {
+                                origin = body.coreTransform.position,
+                                scale = 30,
+                                rotation = Quaternion.identity
+                            }, true);
+                            SphereSearch sphereSearch = new SphereSearch();
+                            List<HurtBox> list = HG.CollectionPool<HurtBox, List<HurtBox>>.RentCollection();
+                            sphereSearch.mask = LayerIndex.entityPrecise.mask;
+                            sphereSearch.origin = body.coreTransform.position;
+                            sphereSearch.radius = 30;
+                            sphereSearch.queryTriggerInteraction = QueryTriggerInteraction.UseGlobal;
+                            sphereSearch.RefreshCandidates();
+                            sphereSearch.FilterCandidatesByHurtBoxTeam(TeamMask.GetEnemyTeams(body.teamComponent.teamIndex));
+                            sphereSearch.OrderCandidatesByDistance();
+                            sphereSearch.FilterCandidatesByDistinctHurtBoxEntities();
+                            sphereSearch.GetHurtBoxes(list);
+                            sphereSearch.ClearCandidates();
+                            for (int i = 0; i < list.Count; i++)
+                            {
+                                HurtBox hurtBox = list[i];
+                                CharacterBody victimBody = hurtBox.healthComponent.body;
+                                if (hurtBox && hurtBox.healthComponent && hurtBox.healthComponent.alive)
+                                {
+                                    DotController.InflictDot(victimBody.gameObject, body.gameObject, DotController.DotIndex.Bleed, 3.0f, body.damage, null);
+                                }
+                            }
+                            body.hasTeleported = true;
+                        });
+                    }
+                    else
+                    {
+                        Logger.LogWarning("Unstable Transmitter - Failure to hook replacement");
+                    }
+                };
+            }
+        }
         private void SetUpLegendaryItems()
         {
             // Warped Echo Rework & Bug Fix
@@ -415,6 +471,15 @@ namespace SeekerItems
                         });
                     }
                 };
+            }
+        }
+        private void SetUpMisc()
+        {
+            if (MainConfig.SkillDisableCleansable.Value)
+            {
+                BuffDef disableSkill = Addressables.LoadAsset<BuffDef>("RoR2/DLC2/bdDisableAllSkills.asset").WaitForCompletion();
+                disableSkill.isDebuff = true;
+                disableSkill.isHidden = true;
             }
         }
 
