@@ -1,6 +1,6 @@
 ﻿using R2API;
-using SeekingItemReworks;
-using SeekingItemReworks.AllItems.Common;
+using SeekerItems.Common;
+using SeekerItems.Legendary;
 
 namespace SeekerItems
 {
@@ -8,10 +8,14 @@ namespace SeekerItems
     {
         public static void Init()
         {
+            // Common
             Items.SetNewDesc(new WarpedEcho(), !MainConfig.WarpedEchoReworkEnabled.Value);
             Items.SetNewDesc(new ChronicExpansion());
             Items.SetNewDesc(new KnockbackFin(), MainConfig.CursedRewording.Value);
             Items.SetNewName(new KnockbackFin(), "Flying Fin", MainConfig.CursedRewording.Value, "Knockup Fin");
+
+            // Legendary
+            Items.SetNewDesc(new WarBonds());
         }
 
         public static void SetNewDesc(RiskItem ItemInfo, bool doAlt = false)

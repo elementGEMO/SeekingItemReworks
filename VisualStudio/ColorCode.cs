@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine.UIElements;
-
-namespace SeekingItemReworks
+﻿namespace SeekingItemReworks
 {
     public static class ColorCode
     {

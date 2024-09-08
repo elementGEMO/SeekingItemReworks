@@ -8,8 +8,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 
 using SeekingItemReworks;
-using HarmonyLib;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace SeekerItems
 {
@@ -33,6 +32,7 @@ namespace SeekerItems
             Items.Init();
 
             SetUpCommonItems();
+            SetUpLegendaryItems();
         }
 
         private void SetUpCommonItems()
@@ -332,6 +332,95 @@ namespace SeekerItems
                     }
                 };
             }
+        }
+        private void SetUpLegendaryItems()
+        {
+            // Warped Echo Rework & Bug Fix
+            if (MainConfig.WarBondsReworkEnabled.Value)
+            {
+                IL.RoR2.CharacterBody.Start += il =>
+                {
+                    var cursor = new ILCursor(il);
+                    if (cursor.TryGotoNext(
+                        x => x.MatchCall<Run>("get_instance"), // Index 130
+                        x => x.MatchLdcR4(out _),
+                        x => x.MatchLdarg(0),
+                        x => x.MatchCall<CharacterBody>("get_level") // Cleanse to 146
+                    ))
+                    {
+                        cursor.RemoveRange(17);
+                        cursor.Emit(OpCodes.Ldarg_0);
+                        cursor.EmitDelegate<Action<CharacterBody>>(body =>
+                        {
+                            int itemCount = body.inventory.GetItemCount(DLC2Content.Items.GoldOnStageStart);
+                            for (int i = 0; i < (MainConfig.LWB_PBase.Value + MainConfig.LWB_PStack.Value * (itemCount - 1)); i++)
+                            {
+                                body.AddBuff(DLC2Content.Buffs.FreeUnlocks);
+                            }
+                        });
+                    }
+                };
+
+                IL.RoR2.PurchaseInteraction.OnInteractionBegin += il =>
+                {
+                    var costIndex = -1;
+                    var cursor = new ILCursor(il);
+                    if (cursor.TryGotoNext(
+                        x => x.MatchLdarg(0),
+                        x => x.MatchLdfld<PurchaseInteraction>(nameof(PurchaseInteraction.cost)),
+                        x => x.MatchStloc(out costIndex)
+                    ))
+                    {
+                        cursor.Index += 3;
+                        cursor.Emit(OpCodes.Ldarg_0);
+                        cursor.Emit(OpCodes.Ldarg_1);
+                        cursor.EmitDelegate<Action<PurchaseInteraction, Interactor>>((interact, activator) =>
+                        {
+                            CharacterBody body = activator.GetComponent<CharacterBody>();
+                            int warBondCount = body.inventory.GetItemCount(DLC2Content.Items.GoldOnStageStart);
+                            if (warBondCount > 0 && interact.costType == CostTypeIndex.Money)
+                            {
+                                ExperienceManager.instance.AwardExperience(interact.transform.position, body, (ulong)(interact.cost * (MainConfig.LWB_EBase.Value + MainConfig.LWB_EStack.Value * (warBondCount - 1)) / 100));
+                            }
+                        });
+                    }
+                };
+            }
+
+            if (MainConfig.WarBondsReplaceVFX.Value)
+            {
+                IL.RoR2.GoldOnStageStartBehaviour.GiveWarBondsGold += il =>
+                {
+                    var cursor = new ILCursor(il);
+                    if (cursor.TryGotoNext(
+                        x => x.MatchLdsfld(typeof(CharacterBody.CommonAssets), nameof(CharacterBody.CommonAssets.goldOnStageStartEffect)), // Index 21
+                        x => x.MatchNewobj(out _),
+                        x => x.MatchDup(),
+                        x => x.MatchLdarg(0) // Cleanse to 29
+                    ))
+                    {
+                        cursor.RemoveRange(9);
+                        cursor.Emit(OpCodes.Ldarg_0);
+                        cursor.EmitDelegate<Action<GoldOnStageStartBehaviour>>(async body =>
+                        {
+                            await Task.Delay(1500);
+                            for (int i = 0; i < 20; i++)
+                            {
+                                await Task.Delay(75);
+                                EffectManager.SpawnEffect(HealthComponent.AssetReferences.gainCoinsImpactEffectPrefab, new EffectData
+                                {
+                                    origin = body.transform.position
+                                }, false);
+                            }
+                        });
+                    }
+                };
+            }
+        }
+
+        private void MultiShopCardUtils_OnNonMoneyPurchase(ILContext il)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using static SeekingItemReworks.ColorCode;
 
-namespace SeekingItemReworks.AllItems.Common
+namespace SeekerItems.Common
 {
     internal class KnockbackFin : RiskItem
     {

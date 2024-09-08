@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SeekingItemReworks
+﻿namespace SeekerItems
 {
     internal class RiskItem
     {
         public static int roundVal = MainConfig.RoundNumber.Value;
 
-        private string ItemInternal;
+        private readonly string ItemInternal;
         private string ItemInfo;
         private string ItemDesc;
         private string ItemInfoAlt;
