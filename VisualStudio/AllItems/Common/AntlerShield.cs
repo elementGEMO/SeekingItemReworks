@@ -8,7 +8,8 @@ namespace SeekerItems.Common
         public AntlerShield() : base(
             "NEGATEATTACK",
             "Gain armor from movement speed, and increase movement speed.",
-            "Increase " + "armor ".Style(Color.cIsHealing) + "by " + "5% ".Style(Color.cIsHealing) + "(+5% per stack) ".Style(Color.cStack) + "of " + "current movement speed".Style(Color.cIsUtility) + ". Increase " + "movement speed ".Style(Color.cIsUtility) + "by " + "7% ".Style(Color.cIsUtility) + "(+3.5% per stack)".Style(Color.cStack) + "."
+            string.Format("Increase " + "armor ".Style(Color.cIsHealing) + "by " + "{0}% ".Style(Color.cIsHealing) + "(+{1}% per stack) ".Style(Color.cStack) + "of " + "current movement speed".Style(Color.cIsUtility) + ". Increase " + "movement speed ".Style(Color.cIsUtility) + "by " + "{2}% ".Style(Color.cIsUtility) + "(+{3}% per stack)".Style(Color.cStack) + ".",
+                Math.Round(MainConfig.CAS_ABase.Value, roundVal), Math.Round(MainConfig.CAS_AStack.Value, roundVal), Math.Round(MainConfig.CAS_MBase.Value, roundVal), Math.Round(MainConfig.CAS_MStack.Value, roundVal))
         ) { }
     }
 }
