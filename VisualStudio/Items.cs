@@ -11,22 +11,23 @@ namespace SeekerItems
         public static void Init()
         {
             // Common
-            if (MainConfig.WarpedEchoReworkEnabled.Value || MainConfig.WarpedEchoFixEnabled.Value) { Items.SetNewDesc(new WarpedEcho(), !MainConfig.WarpedEchoReworkEnabled.Value); };
-            if (MainConfig.ChronicExpansionReworkEnabled.Value) { Items.SetNewDesc(new ChronicExpansion()); }
+            if (MainConfig.WarpedEchoReworkEnabled.Value || MainConfig.WarpedEchoFixEnabled.Value) { SetNewDesc(new WarpedEcho(), !MainConfig.WarpedEchoReworkEnabled.Value); };
+            if (MainConfig.ChronicExpansionReworkEnabled.Value) { SetNewDesc(new ChronicExpansion()); }
             if (MainConfig.KnockbackFinReworkEnabled.Value)
-            { 
-                Items.SetNewName(new KnockbackFin(), "Flying Fin", MainConfig.CursedRewording.Value, "Knockup Fin");
-                Items.SetNewName(new KnockbackFin(), "Flying Fin", MainConfig.CursedRewording.Value, "Knockup Fin");
+            {
+                SetNewDesc(new KnockbackFin(), MainConfig.CursedRewording.Value);
+                SetNewName(new KnockbackFin(), "Flying Fin", MainConfig.CursedRewording.Value, "Knockup Fin");
             }
+            if (MainConfig.AntlerShieldReworkEnabled.Value) { SetNewDesc(new AntlerShield()); }
 
             // Uncommon
-            if (MainConfig.UnstableTransmitterReworkEnabled.Value) { Items.SetNewDesc(new UnstableTransmitter()); }
+            if (MainConfig.UnstableTransmitterReworkEnabled.Value) { SetNewDesc(new UnstableTransmitter()); }
 
             // Legendary
-            if (MainConfig.WarBondsReworkEnabled.Value) { Items.SetNewDesc(new WarBonds()); }
+            if (MainConfig.WarBondsReworkEnabled.Value) { SetNewDesc(new WarBonds()); }
 
             // Equipment
-            if (MainConfig.SeedOfLifeRewriteEnabled.Value) { Items.SetNewDesc(new SeedOfLife(), false, "EQUIPMENT_"); }
+            if (MainConfig.SeedOfLifeRewriteEnabled.Value) { SetNewDesc(new SeedOfLife(), false, "EQUIPMENT_"); }
         }
 
         public static void SetNewDesc(RiskItem ItemInfo, bool doAlt = false, string forcedPrefix = "ITEM_")

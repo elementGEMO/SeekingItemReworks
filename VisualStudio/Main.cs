@@ -10,6 +10,9 @@ using UnityEngine.AddressableAssets;
 using SeekingItemReworks;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using EntityStates;
+using IL.RoR2.Items;
+using SeekerItems.Uncommon;
 
 namespace SeekerItems
 {
@@ -148,36 +151,6 @@ namespace SeekerItems
                         Logger.LogWarning("Warped Echo - Failure to hook");
                     }
                 };
-
-                /* // Makes Delayed Damage not trigger during pause menu
-                IL.RoR2.CharacterBody.DoItemUpdates += il =>
-                {
-                    var cursor = new ILCursor(il);
-
-                    if (cursor.TryGotoNext(
-                        x => x.MatchCall(typeof(UnityEngine.Time), "get_fixedDeltaTime"),
-                        x => x.MatchCall<CharacterBody>(nameof(CharacterBody.UpdateDelayedDamage)),
-                        x => x.MatchLdarg(0)
-                    ))
-                    {
-                        cursor.Remove();
-                        cursor.Emit(OpCodes.Ldarg_1);
-
-                        if (cursor.TryGotoNext(
-                            x => x.MatchCall(typeof(UnityEngine.Time), "get_fixedDeltaTime"),
-                            x => x.MatchCall<CharacterBody>(nameof(CharacterBody.UpdateSecondHalfOfDamage)),
-                            x => x.MatchLdarg(0)
-                        ))
-                        {
-                            cursor.Remove();
-                            cursor.Emit(OpCodes.Ldarg_1);
-                        }
-                    }
-                    else
-                    {
-                        Logger.LogWarning("Warped Echo - Failure to hook update");
-                    }
-                };*/
             }
 
             // Chronic Expansion Rework
@@ -218,7 +191,7 @@ namespace SeekerItems
             // Knockback Fin Rework
             if (MainConfig.KnockbackFinReworkEnabled.Value)
             {
-
+                // Changing proc chance
                 IL.RoR2.GlobalEventManager.ProcessHitEnemy += il =>
                 {
                     var cursor = new ILCursor(il);
@@ -242,7 +215,7 @@ namespace SeekerItems
                             victim.GetComponent<RigidbodyMotor>();
 
                             int itemCount = attackerBody.inventory.GetItemCount(DLC2Content.Items.KnockBackHitEnemies);
-                            float procChance = (float)MainConfig.CKF_KBase.Value + (MainConfig.CKF_KStack.Value * (itemCount - 1)) * damageInfo.procCoefficient;
+                            float procChance = (float)(MainConfig.CKF_KBase.Value + MainConfig.CKF_KStack.Value * (itemCount - 1)) * damageInfo.procCoefficient;
 
                             if (MainConfig.CKF_Hyperbolic.Value)
                             {
@@ -286,6 +259,7 @@ namespace SeekerItems
                     }
                 };
 
+                // Damage to airborne
                 IL.RoR2.HealthComponent.TakeDamageProcess += il =>
                 {
                     var cursor = new ILCursor(il);
@@ -304,14 +278,13 @@ namespace SeekerItems
 
                         cursor.EmitDelegate<Func<CharacterBody, HealthComponent, DamageInfo, float, float>>((characterBody, healthComponent, damageInfo, damage) =>
                         {
-                            
                             float modDamage = damage;
                             int finCount = characterBody.inventory.GetItemCount(DLC2Content.Items.KnockBackHitEnemies);
                             if (finCount > 0)
                             {
                                 if (healthComponent.body.isFlying || (healthComponent.body.characterMotor != null && !healthComponent.body.characterMotor.isGrounded))
                                 {
-                                    modDamage *= (float) 1.0f + (MainConfig.CKF_KBase.Value + (finCount - 1) * MainConfig.CKF_KStack.Value) / 100.0f;
+                                    modDamage *= (float) 1.0f + (MainConfig.CKF_DBase.Value + (finCount - 1) * MainConfig.CKF_DStack.Value) / 100.0f;
                                     EffectManager.SimpleImpactEffect(HealthComponent.AssetReferences.mercExposeConsumeEffectPrefab, damageInfo.position, Vector3.up, true);
                                 }
                             }
@@ -325,15 +298,76 @@ namespace SeekerItems
                     }
                 };
             }
+
+            // Bolstering Lantern Rework
+
+            // Antler Shield Rework
+            if (MainConfig.AntlerShieldReworkEnabled.Value)
+            {
+                // Scale armor with speed, and gain speed
+                IL.RoR2.CharacterBody.RecalculateStats += il =>
+                {
+                    var cursor = new ILCursor(il);
+                    if (cursor.TryGotoNext(
+                        x => x.MatchCall<CharacterBody>("set_armor"),
+                        x => x.MatchLdarg(0),
+                        x => x.MatchLdsfld(typeof(RoR2Content.Buffs), nameof(RoR2Content.Buffs.Cripple))
+                    ))
+                    {
+                        cursor.Index++;
+                        cursor.Emit(OpCodes.Ldarg_0);
+                        cursor.EmitDelegate<Action<CharacterBody>>(body =>
+                        {
+                            if (body.inventory)
+                            {
+                                int antlerCount = body.inventory.GetItemCount(DLC2Content.Items.NegateAttack);
+                                if (antlerCount > 0)
+                                {
+                                    body.armor += (float)(MainConfig.CAS_ABase.Value + MainConfig.CAS_AStack.Value * (antlerCount - 1)) / 100f * body.moveSpeed;
+                                    body.moveSpeed *= 1 + (MainConfig.CAS_MBase.Value + MainConfig.CAS_MStack.Value * (antlerCount - 1)) / 100f;
+                                }
+                            }
+                        });
+                    }
+                    else
+                    {
+                        Logger.LogWarning("Antler Shield - Failure to hook calculate stats");
+                    }
+                };
+
+                // Remove old Antler reflect
+                IL.RoR2.HealthComponent.TakeDamageProcess += il =>
+                {
+                    var cursor = new ILCursor(il);
+                    if (cursor.TryGotoNext(
+                        x => x.MatchLdfld(typeof(HealthComponent.ItemCounts), nameof(HealthComponent.itemCounts.antlerShield)),
+                        x => x.MatchLdcI4(0)
+                    ))
+                    {
+                        cursor.Index += 1;
+                        cursor.Remove();
+                        cursor.Emit(OpCodes.Ldc_I4, int.MaxValue);
+
+                        /*
+                        cursor.Index += 1;
+                        //cursor.Remove();
+                        //cursor.Emit(OpCodes.Ldc_I4, int.MaxValue);
+                        //cursor.Emit(OpCodes.Ldc_I4_0);
+                        cursor.EmitDelegate<Func<int, int>>(self => int.MaxValue);
+                        */
+                    }
+                    else
+                    {
+                        Logger.LogWarning("Antler Shield - Failure to hook condition removal");
+                    }
+                };
+            }
         }
         private void SetUpUncommonItems()
         {
             // Unstable Transmitter Rework
             if (MainConfig.UnstableTransmitterReworkEnabled.Value)
             {
-                // Transmitter Effect Buff
-                new TransmitterEffect();
-
                 // Bleed area effect, and intangibility
                 IL.RoR2.CharacterBody.RpcTeleportCharacterToSafety += il =>
                 {
@@ -351,13 +385,8 @@ namespace SeekerItems
                             {
                                 return;
                             }
-                            body.AddTimedBuff(TransmitterEffect.getTransmitterDef(), 2.0f);
-                            EffectManager.SpawnEffect(CharacterBody.CommonAssets.teleportOnLowHealthExplosion, new EffectData
-                            {
-                                origin = body.coreTransform.position,
-                                scale = 30,
-                                rotation = Quaternion.identity
-                            }, true);
+                            int unstableCount = body.inventory.GetItemCount(DLC2Content.Items.TeleportOnLowHealth);
+                            EntityStateMachine.FindByCustomName(body.gameObject, "Body").SetNextState(new IntangibleSkillState());
                             SphereSearch sphereSearch = new SphereSearch();
                             List<HurtBox> list = HG.CollectionPool<HurtBox, List<HurtBox>>.RentCollection();
                             sphereSearch.mask = LayerIndex.entityPrecise.mask;
@@ -376,7 +405,15 @@ namespace SeekerItems
                                 CharacterBody victimBody = hurtBox.healthComponent.body;
                                 if (hurtBox && hurtBox.healthComponent && hurtBox.healthComponent.alive)
                                 {
-                                    DotController.InflictDot(victimBody.gameObject, body.gameObject, DotController.DotIndex.Bleed, 3.0f, body.damage, null);
+                                    DotController.InflictDot
+                                    (
+                                        victimBody.gameObject,
+                                        body.gameObject,
+                                        DotController.DotIndex.Bleed,
+                                        3.0f,
+                                        body.damage * (MainConfig.UUT_BBase.Value + MainConfig.UUT_BStack.Value * (unstableCount - 1)) / 100,
+                                        null
+                                    );
                                 }
                             }
                             body.hasTeleported = true;
@@ -387,8 +424,28 @@ namespace SeekerItems
                         Logger.LogWarning("Unstable Transmitter - Failure to hook replacement");
                     }
                 };
+
+                // Change refresh duration
+                IL.RoR2.HealthComponent.UpdateLastHitTime += il =>
+                {
+                    var durationIndex = -1;
+                    var cursor = new ILCursor(il);
+                    if (cursor.TryGotoNext(
+                        x => x.MatchStloc(out durationIndex),
+                        x => x.MatchLdarg(0),
+                        x => x.MatchLdfld<HealthComponent>(nameof(HealthComponent.body)),
+                        x => x.MatchLdsfld(typeof(DLC2Content.Buffs), nameof(DLC2Content.Buffs.TeleportOnLowHealthCooldown)),
+                        x => x.MatchLdloc(out _)
+                    ))
+                    {
+                        cursor.Index++;
+                        cursor.Emit(OpCodes.Ldloc_S, (byte)durationIndex);
+                        cursor.EmitDelegate<Func<float, float>>(duration => MainConfig.UUT_Refresh.Value);
+                        cursor.Emit(OpCodes.Stloc_S, (byte)durationIndex);
+                    }
+                };
             }
-        }
+        }   
         private void SetUpLegendaryItems()
         {
             // Warped Echo Rework & Bug Fix
@@ -479,13 +536,53 @@ namespace SeekerItems
             {
                 BuffDef disableSkill = Addressables.LoadAsset<BuffDef>("RoR2/DLC2/bdDisableAllSkills.asset").WaitForCompletion();
                 disableSkill.isDebuff = true;
-                disableSkill.isHidden = true;
+                //disableSkill.isHidden = true;
             }
-        }
 
-        private void MultiShopCardUtils_OnNonMoneyPurchase(ILContext il)
-        {
-            throw new NotImplementedException();
+            if (MainConfig.StealthKitCleanse.Value)
+            {
+                Items.SetNewDesc(new OldWarStealthKit());
+                IL.RoR2.Items.PhasingBodyBehavior.FixedUpdate += il =>
+                {
+                    var cursor = new ILCursor(il);
+                    if (cursor.TryGotoNext(
+                        x => x.MatchLdarg(0),
+                        x => x.MatchCall(typeof(RoR2.Items.BaseItemBodyBehavior), "get_body"),
+                        x => x.MatchLdsfld(typeof(RoR2Content.Buffs), nameof(RoR2Content.Buffs.Cloak))
+                    ))
+                    {
+                        //cursor.Index++;
+                        cursor.Emit(OpCodes.Ldarg_0);
+                        cursor.EmitDelegate<Action<RoR2.Items.PhasingBodyBehavior>>(itemBase =>
+                        {
+                            int numBuffs = itemBase.body.activeBuffsListCount;
+                            int itemCount = itemBase.body.inventory.GetItemCount(RoR2Content.Items.Phasing);
+                            int numCleansed = 1 + itemCount;
+                            for (int i = 0; i < numBuffs; i++)
+                            {
+                                BuffDef foundBuff = BuffCatalog.GetBuffDef(itemBase.body.activeBuffsList[i]);
+                                if (foundBuff.isDebuff && numCleansed > 0)
+                                {
+                                    numCleansed--; i--;
+                                    itemBase.body.RemoveBuff(foundBuff);
+                                }
+                                else if (numCleansed <= 0) { break; }
+                            }
+                            if (numCleansed < 1 + itemCount)
+                            {
+                                EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/CleanseEffect"), new EffectData
+                                {
+                                    origin = itemBase.body.transform.position
+                                }, true);
+                            }
+                        });
+                    }
+                    else
+                    {
+                        Logger.LogWarning("Old War Stealth Kit - Failure to hook new effect");
+                    }
+                };
+            }
         }
     }
 }
