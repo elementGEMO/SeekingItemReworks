@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using EntityStates;
 using IL.RoR2.Items;
 using SeekerItems.Uncommon;
+using UnityEngine.Networking;
 
 namespace SeekerItems
 {
@@ -344,17 +345,8 @@ namespace SeekerItems
                         x => x.MatchLdcI4(0)
                     ))
                     {
-                        cursor.Index += 1;
-                        cursor.Remove();
-                        cursor.Emit(OpCodes.Ldc_I4, int.MaxValue);
-
-                        /*
-                        cursor.Index += 1;
-                        //cursor.Remove();
-                        //cursor.Emit(OpCodes.Ldc_I4, int.MaxValue);
-                        //cursor.Emit(OpCodes.Ldc_I4_0);
-                        cursor.EmitDelegate<Func<int, int>>(self => int.MaxValue);
-                        */
+                        cursor.Index += 2;
+                        cursor.EmitDelegate<Func<int, int>>(stack => int.MaxValue);
                     }
                     else
                     {
@@ -448,7 +440,7 @@ namespace SeekerItems
         }   
         private void SetUpLegendaryItems()
         {
-            // Warped Echo Rework & Bug Fix
+            // War Bonds Rework & VFX Replace
             if (MainConfig.WarBondsReworkEnabled.Value)
             {
                 IL.RoR2.CharacterBody.Start += il =>
@@ -499,7 +491,6 @@ namespace SeekerItems
                     }
                 };
             }
-
             if (MainConfig.WarBondsReplaceVFX.Value)
             {
                 IL.RoR2.GoldOnStageStartBehaviour.GiveWarBondsGold += il =>
@@ -525,6 +516,83 @@ namespace SeekerItems
                                     origin = body.transform.position
                                 }, false);
                             }
+                        });
+                    }
+                };
+            }
+
+            // Growth Nectar Rework
+            if (MainConfig.GrowthNectarReworkEnabled.Value)
+            {
+                On.RoR2.EquipmentSlot.MyFixedUpdate += (orig, equip, deltaTime) =>
+                {
+                    orig(equip, deltaTime);
+                    if (NetworkServer.active && equip.characterBody.inventory)
+                    {
+                        int nectarCount = equip.characterBody.inventory.GetItemCount(DLC2Content.Items.BoostAllStats);
+                        bool nonEquip = equip.cooldownTimer == float.PositiveInfinity || equip.cooldownTimer == float.NegativeInfinity;
+                        bool hasBuff = equip.characterBody.HasBuff(DLC2Content.Buffs.BoostAllStatsBuff);
+                        if (nectarCount > 0 && !hasBuff && (equip.cooldownTimer <= 0 || nonEquip))
+                        {
+                            equip.characterBody.AddBuff(DLC2Content.Buffs.BoostAllStatsBuff);
+                        }
+                        else if (nectarCount <= 0 || !nonEquip)
+                        {
+                            equip.characterBody.RemoveBuff(DLC2Content.Buffs.BoostAllStatsBuff);
+                        }
+                    }
+                };
+
+                IL.RoR2.CharacterBody.UpdateBoostAllStatsTimer += il =>
+                {
+                    var cursor = new ILCursor(il);
+                    cursor.Emit(OpCodes.Ret);
+                };
+
+                IL.RoR2.CharacterBody.RecalculateStats += il =>
+                {
+                    var cursor = new ILCursor(il);
+                    if (cursor.TryGotoNext(
+                        x => x.MatchLdcI4(0),
+                        x => x.MatchBle(out _),
+                        x => x.MatchLdarg(0),
+                        x => x.MatchLdsfld(typeof(DLC2Content.Buffs), nameof(DLC2Content.Buffs.BoostAllStatsBuff))
+                    ))
+                    {
+                        cursor.Index++;
+                        cursor.EmitDelegate<Func<int, int>>(stack => int.MaxValue);
+                    }
+                    else
+                    {
+                        Logger.LogWarning("Growth Nectar - Failure to hook condition removal");
+                    }
+                };
+
+                IL.RoR2.CharacterBody.RecalculateStats += il =>
+                {
+                    var numCountIndex = -1;
+                    var cursor = new ILCursor(il);
+                    if (cursor.TryGotoNext(
+                        x => x.MatchLdloc(out numCountIndex), // Index of 2328
+                        x => x.MatchConvR4(),
+                        x => x.MatchLdarg(0),
+                        x => x.MatchLdfld<CharacterBody>(nameof(CharacterBody.boostAllStatsMultiplier)) // Remove @ 2405
+                    ))
+                    {
+                        cursor.RemoveRange(78);
+                        cursor.Emit(OpCodes.Ldarg_0);
+                        cursor.Emit(OpCodes.Ldloc, numCountIndex);
+                        cursor.EmitDelegate<Action<CharacterBody, int>>((body, nectarCount) =>
+                        {
+                            EquipmentSlot equip = body.equipmentSlot;
+                            float multiplier = (float) (MainConfig.LGN_SBase.Value + MainConfig.LGN_SStack.Value * (nectarCount - 1) + Math.Min(MainConfig.LGN_Charge.Value * (equip.maxStock - 1), MainConfig.LGN_CBase.Value + MainConfig.LGN_CStack.Value * (nectarCount - 1))) / 100;
+
+                            body.maxHealth += body.maxHealth * multiplier;
+                            body.moveSpeed += body.moveSpeed * multiplier;
+                            body.damage += body.damage * multiplier;
+                            body.attackSpeed += body.attackSpeed * multiplier;
+                            body.crit += body.crit * multiplier;
+                            body.regen += body.regen * multiplier;
                         });
                     }
                 };

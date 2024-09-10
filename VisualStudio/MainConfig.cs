@@ -109,6 +109,15 @@ namespace SeekerItems
         }
 
         // War Bonds
+        public static ConfigEntry<bool> GrowthNectarReworkEnabled;
+
+        public static ConfigEntry<float> LGN_SBase;
+        public static ConfigEntry<float> LGN_SStack;
+        public static ConfigEntry<float> LGN_Charge;
+        public static ConfigEntry<float> LGN_CBase;
+        public static ConfigEntry<float> LGN_CStack;
+
+        // War Bonds
         public static ConfigEntry<bool> WarBondsReworkEnabled;
         public static ConfigEntry<bool> WarBondsReplaceVFX;
 
@@ -119,6 +128,14 @@ namespace SeekerItems
 
         public static void LegendaryConfig(BaseUnityPlugin plugin)
         {
+            GrowthNectarReworkEnabled = plugin.Config.Bind("Growth Nectar", "Enable Rework?", true, "Changes Growth Nectar to give stat boosts when equip is not on cooldown.");
+
+            LGN_SBase = plugin.Config.Bind("Growth Nectar", "! Stats Base Stack !", 20f, "[ Applies to Rework Only ]\nHow much of ALL stats to increase.\n-\n 20.0 = 20% increase.\n");
+            LGN_SStack = plugin.Config.Bind("Growth Nectar", "! Stats Stack !", 20f, "[ Applies to Rework Only ]\nHow much of ALL stats to increase per stack.\n-\n 20.0 = +20% increase per stack.\n");
+            LGN_Charge = plugin.Config.Bind("Growth Nectar", "! Stats Per Charge !", 2f, "[ Applies to Rework Only ]\nHow much ALL stats increase per equip charge.\n-\n 2.0 = 2% per equip charge.\n");
+            LGN_CBase = plugin.Config.Bind("Growth Nectar", "! Stats Base Stack Charge Max !", 10f, "[ Applies to Rework Only ]\nMax value of ALL stat increases from equip charges.\n-\n 10.0 = 10% maximum.\n");
+            LGN_CStack = plugin.Config.Bind("Growth Nectar", "! Stats Stack Charge Max !", 10f, "[ Applies to Rework Only ]\nMax value of ALL stat increases from equip charges per stack.\n-\n 10.0 = +10% maximum per stack.\n");
+
             WarBondsReworkEnabled = plugin.Config.Bind("War Bonds", "Enable Rework?", true, "Changes War Bonds to free purchases instead, and gold purchases give experience.");
             WarBondsReplaceVFX = plugin.Config.Bind("War Bonds", "Change Visual Effects?", true, "Replaces War Bond's gold effect at the start of a stage with Brittle Crown's.");
 

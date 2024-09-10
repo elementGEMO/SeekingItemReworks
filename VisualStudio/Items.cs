@@ -25,6 +25,7 @@ namespace SeekerItems
 
             // Legendary
             if (MainConfig.WarBondsReworkEnabled.Value) { SetNewDesc(new WarBonds()); }
+            if (MainConfig.GrowthNectarReworkEnabled.Value) { SetNewDesc(new GrowthNectar()); }
 
             // Equipment
             if (MainConfig.SeedOfLifeRewriteEnabled.Value) { SetNewDesc(new SeedOfLife(), false, "EQUIPMENT_"); }
