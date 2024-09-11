@@ -1,31 +1,55 @@
-# Seeking Item Reworks
-A mod focused entirely on reworking mostly Seekers of the Storm items, either by slight number adjustments to completely new functionalities. This mod is extremely configurable, down to the numbers and just straight up rework disable.
+## Seeking Item Reworks
 
-Each item is easily configurable to almost each of their stacks, and base numbers, and other miscellaneous effects like optional visual effects.
-## Main Reworks
-- These are the main items that are reworked or modified.
-- As I repeat, can be heavily configurated.
+Finally some good items... _( I would hope at least )_<br> - Made by ``@noodlegemo``
 
-| Item / Equipment Tier  | Item Name | Description |
-| ------------- |:-------------:| ------------- |
-| Common | Warped Echo | Incoming non-lethal damage is split 50%, with the other 50% delayed for 3s (+1.5s per stack). Recharges when damage is no longer delayed. _**- Basically can't kill you anymore.**_
-| Common | Chronic Expansion | Killing 5 enemies in combat buffs damage by 7% (+5% per stack) temporarily each time, until leaving combat. _**- No longer misleading stacking.**_
-| Common | Knockback Fin | 5% (+2% per stack) chance on hit to knock enemies into the air. Deal +10% (+10% per stack) damage to airborne enemies. _**- Now mostly anti-air playstyle.**_
-| Common | Antler Shield | Increase armor by 5% (+5% per stack) of current movement speed. Increase movement speed  by 7% (+3.5% per stack). _**- Focused on gaining more armor through speed.**_
-| Uncommon | Unstable Transmitter | Falling below 25% health causes you to fade away, becoming intangible and exploding, inflicting bleed to enemies within 30m for 100% (+50% per stack) base damage. Lasts 2s (+0.5s per stack). Recharges every 60 seconds. _**- Scales on the player's base damage, not proc-coefficient. Also is more damage than Old War Stealthkit.**_
-| Legendary | War Bonds | Gain 3 (+2 per stack) free purchases at the start of each stage. When making a gold purchase, get 20% (+10% per stack) of spent gold as experience. _**- Makes War Bonds actually worth while, and excels early on for more experience gains.**_
-| Equipment | Seed of Life | Returns the user to life upon death or dead allies on use. Equipment is consumed on use. _**- Just rewriting the description, nothing is changed otherwise**_
-## Soft Reworks
-- These are the miscellaneous items that are reworked or modified.
-- These changes can only be toggled for the time being.
+This mod focuses on improving, reworking, or just simply rewording items from DLC 2 _( Seekers of the Storm )_.
+<br>Feel free to leave feedback by contacting me through the ``Risk of Rain 2 Modding`` Discord server.
 
-| Item / Equipment Tier  | Item Name | Description |
-| ------------- |:-------------:| ------------- |
-| Uncommon | Old War Stealthkit | Falling below 25% health causes you to become invisible for 5 seconds, boost movement speed by 40%, and cleanse 2 debuffs (+1 per stack). Recharges every 30 seconds (-50% per stack). _**- Makes it on par with Unstable Transmitter rework**_
-| Legendary | Ben's Raincoat | _**- Uh, there's no actual change to Ben's Raincoat. Really, all there is, is that False Son's Skill Disable debuff can now be cleansed.**_
-## Foreseeable Plans
-Well duh, I'd still be frequently working on these item reworks. I plan to touch all of the Seekers of the Storm items. Maybe at some point, I'd touch other item reworks as well. Depends on my motivation and all.
-# Credits
-- SomeoneElse (notsomeoneelse) = Heavily contributed to my own personal experience on IL Hooking.
-- Bubbets (bubbet) = Somewhat contributed to my own personal experience with C# programming.
-- Gemo (noodlegemo) = Here I am, I tried developing this mod to the best of my abilities.
+These reworks aren't limited to just Seekers of the Storm, and may extend towards to DLC 1 _( Survivors of the Void )_<br>Reworks are also very configurable, ranging from simply disabling them, to changing each individual value. <br>There are also some other miscellaneous configurations as well.
+
+## Seekers of the Storm Reworks
+| Icon | Item | Description | Notes |
+|-|-|------|-|
+|![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/3/3e/Warped_Echo.png/revision/latest/scale-to-width-down/33?cb=20240828192226)|Warped Echo|**Incoming non-lethal damage** is split **50%**, with the other **50%** delayed for **3s** _(+2s per stack)_. Recharges when damage is no longer delayed.|Can no longer screw over the player.|
+|![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/d/d0/Chronic_Expansion.png/revision/latest/scale-to-width-down/33?cb=20240828192616)|Chronic Expansion|**Killing 5 enemies** in combat buffs damage by **7%** _(+5% per stack)_ temporarily each time, until leaving combat.|No longer misleading stacking.|
+|![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/d/d0/Knockback_Fin.png/revision/latest/scale-to-width-down/33?cb=20240828192744)|Flying Fin|**5%** _(+2% per stack)_ chance on hit to **knock enemies into the air**. Deal **+10%** _(+10% per stack)_ damage to **airborne** enemies.|Focused on anti-air instead.|
+|![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/5/50/Bolstering_Lantern.png/revision/latest/scale-to-width-down/33?cb=20240828192831)|Bolstering Lantern|Not Implemented|N/A|
+|![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/f/f6/Antler_Shield.png/revision/latest/scale-to-width-down/33?cb=20240828193005)|Antler Shield|Increase **armor** by **5%** _(+5% per stack)_ of **current movement speed**. Increase **movement speed** by **7%** _(+3.5% per stack)_.|Why not have more armor?|
+|![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/e/e5/Chance_Doll.png/revision/latest/scale-to-width-down/33?cb=20240828192258)|Chance Doll|Not Implemented|N/A|
+|![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/3/36/Prayer_Beads.png/revision/latest/scale-to-width-down/33?cb=20240828192333)|Prayer Beads|Not Implemented|N/A|
+|![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/2/25/Luminous_Shot.png/revision/latest/scale-to-width-down/33?cb=20240828192722)|Luminous Shot|Not Implemented|N/A|
+|![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/e/e1/Sale_Star.png/revision/latest/scale-to-width-down/33?cb=20240828192850)|Sale Star|Not Implemented|N/A|
+|![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/e/e0/Unstable_Transmitter.png/revision/latest/scale-to-width-down/33?cb=20240828193252)|Unstable Transmitter|Falling below **25% health** causes you to fade away, becoming **intangible** and exploding, inflicting **bleed** to enemies within **30m** for **100%** _(+50% per stack)_ base damage. Lasts **2s** _(+0.5s per stack)_. Recharges every **60 seconds**.|Reliable instead of terrible.|
+|![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/4/4b/Noxious_Thorn.png/revision/latest/scale-to-width-down/33?cb=20240828193330)|Noxious Thorns|Not Implemented|N/A|
+|![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/8/8e/Growth_Nectar.png/revision/latest/scale-to-width-down/33?cb=20240828192126)|Growth Nectar|When your Equipment is off **cooldown**, increase **ALL stats** by **20%** _(+20% per stack)_, and by **2%** per **Equipment charge**, up to a maximum of **10%** _(+10% per stack)_.|New niche playstyle focused on not using equips.|
+|![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/7/75/War_Bonds.png/revision/latest/scale-to-width-down/33?cb=20240828192539)|War Bonds|Gain **3** _(+2 per stack)_ **free purchases** at the **start of each stage**. When making a gold purchase, get **20%** _(+10% per stack)_ of spent gold as **experience**.|Actually makes it worthwhile.|
+|![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/d/d3/Runic_Lens.png/revision/latest/scale-to-width-down/33?cb=20240828192929)|Runic Lens|Not Implemented|N/A|
+|![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/b/be/Sonorous_Whispers.png/revision/latest/scale-to-width-down/33?cb=20240828193034)|Sonorous Whispers|Not Implemented|N/A|
+|![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/8/8d/Electric_Boomerang.png/revision/latest/scale-to-width-down/33?cb=20240828193057)|Electric Boomerang|Not Implemented|N/A|
+|![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/8/8b/Longstanding_Solitude.png/revision/latest/scale-to-width-down/33?cb=20240828181518)|Longstanding Solitude|Not Implemented|N/A|
+|![](https://github.com/elementGEMO/SeekingItemReworks/blob/master/MarkdownVisuals/NewLunarDownside.png?raw=true)|Despair|Not Implemented|N/A|
+|![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/9/9e/Seed_of_Life.png/revision/latest/scale-to-width-down/33?cb=20240828191958)|Seed of Life|**Returns** the user **to life upon death** or dead allies on use. Equipment is **consumed** on use|Just rewording.|
+
+## Survivors of the Void
+| Icon | Item | Description | Notes |
+|-|-|------|-|
+|![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/2/25/Ben%27s_Raincoat.png/revision/latest/scale-to-width-down/33?cb=20220302043224)|Ben's Raincoat|Prevents **1** _(+1 per stack)_ **debuff** and instead grants a **temporary barrier** for **10%** of **maximum health**. Recharges every **5** seconds.|No changes, just False Son's skill disable can be cleansed now.|
+
+- Toggleable configuration for now.
+
+## Risk of Rain 2
+| Icon | Item | Description | Notes |
+|-|-|------|-|
+|![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/2/2c/Old_War_Stealthkit.png/revision/latest/scale-to-width-down/33?cb=20200129193125)|Old War Stealthkit|Falling below **25% health** causes you become **invisible** for **5s**, boost **movement speed** by **40%** and **cleanse 2 debuffs** _(+1 per stack)_. Recharges every **30** _(-50% per stack)_ seconds.|Making it on par to Unstable Transmitter.|
+
+- Toggleable configuration for now.
+
+## Plans
+
+Obviously the goal is to rework all of Seekers of the Storm items.
+<br>However, extending out to other DLCs and even base game could be a reasonable foreseeable step as well.
+
+## Special Thanks
+- **SomeoneElse** ``@notsomeoneelse``, for heavily assisting me with how to program utilizing IL Hooks.
+- **Bubbet** ``@bubbet``, for assisting me with how to program somewhat.
+- **HIFU** ``@hifuwu``, for answering my extremely redundant programming questions.
