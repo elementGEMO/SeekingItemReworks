@@ -27,11 +27,9 @@ namespace SeekerItems
 
         // Warped Echo
         public static ConfigEntry<bool> WarpedEchoReworkEnabled;
-        public static ConfigEntry<bool> WarpedEchoFixEnabled;
 
-        public static ConfigEntry<float> CWE_Cap;
         public static ConfigEntry<float> CWE_Delay;
-        public static ConfigEntry<float> CWE_Stack;
+        public static ConfigEntry<int> CWE_Stack;
 
         // Chronic Expansion
         public static ConfigEntry<bool> ChronicExpansionReworkEnabled;
@@ -58,13 +56,11 @@ namespace SeekerItems
 
         public static void CommonConfig(BaseUnityPlugin plugin)
         {
-            WarpedEchoReworkEnabled = plugin.Config.Bind("Warped Echo", "Enable Rework?", true, "Changes Warped Echo to only split damage one at a time, stacking delay duration. Forces bug fixes internally.");
-            WarpedEchoFixEnabled = plugin.Config.Bind("Warped Echo", "Enable Bug Fixes?", true, "Prevents Warped Echo from splitting lethal damage.");
+            WarpedEchoReworkEnabled = plugin.Config.Bind("Warped Echo", "Enable Rework?", true, "Changes Warped Echo to refresh immediately after delayed damage.");
 
-            CWE_Cap = plugin.Config.Bind("Warped Echo", "! Damage Cap !", 1.0f, "[ Applies to Rework & Bugfix ]\nThe percentage at which damage can't exceed the current health.\n - 1.0 = Damage can't be over 100% of health.\n");
-            CWE_Delay = plugin.Config.Bind("Warped Echo", "! Base Delay !", 3.0f, "[ Applies to Rework Only ]\nThe base time for delayed damage triggering.\n- 3.0 = Damage delayed for 3 seconds.\n");
-            CWE_Stack = plugin.Config.Bind("Warped Echo", "! Stack Delay !", 1.5f, "[ Applies to Rework Only ]\nThe extra time for delayed damage triggering when stacking.\n- 1.5 = Damage delayed for +1.5 seconds with each stack.\n");
-            
+            CWE_Delay = plugin.Config.Bind("Warped Echo", "! Delay !", 4.0f, "[ Applies to Rework Only ]\nThe time for delayed damage triggering.\n- 4.0 = Damage delayed for 4 seconds.\n");
+            CWE_Stack = plugin.Config.Bind("Warped Echo", "! Stack !", 1, "[ Applies to Rework Only ]\nHow much more instances to gain per stack.\n- 1 = +1 instance.\n");
+
             ChronicExpansionReworkEnabled = plugin.Config.Bind("Chronic Expansion", "Enable Rework?", true, "Changes Chronic Expansion by slightly nerfing the values and replacing current stacking with a proper formula.");
 
             CCE_Base = plugin.Config.Bind("Chronic Expansion", "! Base Stack !", 7.0f, "[ Applies to Rework Only ]\nThe base percentage damage for one buff.\n- 7.0 = 7% damage increase per buff.\n");
@@ -80,10 +76,10 @@ namespace SeekerItems
 
             AntlerShieldReworkEnabled = plugin.Config.Bind("Antler Shield", "Enable Rework?", true, "Changes Antler Shield to scale armor off of speed, and gives slightly extra speed.");
 
-            CAS_ABase = plugin.Config.Bind("Antler Shield", "! Armor Base Stack !", 5.0f, "[ Applies to Rework Only ]\nThe percent conversion of movement speed to armor.\n- 5.0 = 5% movement to armor.\n");
-            CAS_AStack = plugin.Config.Bind("Antler Shield", "! Armor Stack !", 5.0f, "[ Applies to Rework Only ]\nThe extra percent conversion of movement speed to armor when stacking.\n- 5.0 = +5% movement to armor per stack.\n");
+            CAS_ABase = plugin.Config.Bind("Antler Shield", "! Armor Base Stack !", 1.0f, "[ Applies to Rework Only ]\nThe percent conversion of movement speed to armor.\n- 10.0 = 10.0% movement to armor.\n");
+            CAS_AStack = plugin.Config.Bind("Antler Shield", "! Armor Stack !", 1.0f, "[ Applies to Rework Only ]\nThe extra percent conversion of movement speed to armor when stacking.\n- 10.0 = +10.0% movement to armor per stack.\n");
             CAS_MBase = plugin.Config.Bind("Antler Shield", "! Speed Base Stack !", 7.0f, "[ Applies to Rework Only ]\nThe base movement speed increase.\n- 7.0 = 7% movement speed.\n");
-            CAS_MStack = plugin.Config.Bind("Antler Shield", "! Speed Stack !", 3.5f, "[ Applies to Rework Only ]\nThe extra movement speed increase per stack.\n- 3.5 = +3.5% movement speed per stack.\n");
+            CAS_MStack = plugin.Config.Bind("Antler Shield", "! Speed Stack !", 7.0f, "[ Applies to Rework Only ]\nThe extra movement speed increase per stack.\n- 7.0 = +7% movement speed per stack.\n");
         }
 
         // Unstable Transmitter

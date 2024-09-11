@@ -11,7 +11,7 @@ namespace SeekerItems
         public static void Init()
         {
             // Common
-            if (MainConfig.WarpedEchoReworkEnabled.Value || MainConfig.WarpedEchoFixEnabled.Value) { SetNewDesc(new WarpedEcho(), !MainConfig.WarpedEchoReworkEnabled.Value); };
+            if (MainConfig.WarpedEchoReworkEnabled.Value) { SetNewDesc(new WarpedEcho()); };
             if (MainConfig.ChronicExpansionReworkEnabled.Value) { SetNewDesc(new ChronicExpansion()); }
             if (MainConfig.KnockbackFinReworkEnabled.Value)
             {

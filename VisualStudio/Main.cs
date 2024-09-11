@@ -47,109 +47,90 @@ namespace SeekerItems
             // Warped Echo Rework & Bug Fix
             if (MainConfig.WarpedEchoReworkEnabled.Value)
             {
-                // Sets Delayed Damage stacking false.
-                BuffDef delayDmgBuff = Addressables.LoadAsset<BuffDef>("RoR2/DLC2/Items/DelayedDamage/bdDelayedDamageBuff.asset").WaitForCompletion();
-                delayDmgBuff.canStack = false;
+                // Sets Delayed Damage Debuff to cleanse.
+                //BuffDef delayDmgBuff = Addressables.LoadAsset<BuffDef>("RoR2/DLC2/Items/DelayedDamage/bdDelayedDamageDebuff.asset").WaitForCompletion();
+                //delayDmgBuff.isDebuff = true;
 
-                // Makes Delayed Damage delay duration stack instead.
+                // Set Delayed Damage delay timer.
                 IL.RoR2.CharacterBody.SecondHalfOfDelayedDamage += il =>
                 {
                     var cursor = new ILCursor(il);
-
                     if (cursor.TryGotoNext(
-                        x => x.MatchLdarg(0),
-                        x => x.MatchLdsfld(typeof(DLC2Content.Buffs), nameof(DLC2Content.Buffs.DelayedDamageBuff)),
-                        x => x.MatchCall<CharacterBody>(nameof(CharacterBody.RemoveBuff))
-                    ))
-                    {
-                        cursor.Emit(OpCodes.Ldarg_0);
-                        cursor.EmitDelegate<Action<CharacterBody>>(body => body.SetBuffCount(DLC2Content.Buffs.DelayedDamageBuff.buffIndex, 0));
-
-                        if (cursor.TryGotoNext(
                             x => x.MatchLdloc(0),
                             x => x.MatchLdarg(1),
                             x => x.MatchStfld(typeof(CharacterBody.DelayedDamageInfo), nameof(CharacterBody.DelayedDamageInfo.halfDamage))
                         ))
-                        {
-                            cursor.Emit(OpCodes.Ldarg_0);
-                            cursor.Emit(OpCodes.Ldloc_0);
-                            cursor.EmitDelegate<Action<CharacterBody, CharacterBody.DelayedDamageInfo>>((body, damageInfo) =>
-                            {
-                                int itemNum = body.inventory ? body.inventory.GetItemCount(DLC2Content.Items.DelayedDamage) : 0;
-                                damageInfo.timeUntilDamage = MainConfig.CWE_Delay.Value + (itemNum - 1) * MainConfig.CWE_Stack.Value;
-                            });
-                        }
-                    }
-                    else
                     {
-                        Logger.LogWarning("Warped Echo - Failure to hook trigger");
-                    }
-                };
-
-                // Makes Delayed Damage refresh when done.
-                IL.RoR2.CharacterBody.UpdateDelayedDamage += il =>
-                {
-                    var cursor = new ILCursor(il);
-
-                    if (cursor.TryGotoNext(
-                        x => x.MatchLdarg(0),
-                        x => x.MatchLdarg(0),
-                        x => x.MatchLdfld<CharacterBody>(nameof(CharacterBody.delayedDamageRefreshTime)),
-                        x => x.MatchLdarg(1),
-                        x => x.MatchSub(),
-                        x => x.MatchStfld<CharacterBody>(nameof(CharacterBody.delayedDamageRefreshTime))
-                    ))
-                    {
-                        cursor.RemoveRange(6);
                         cursor.Emit(OpCodes.Ldarg_0);
-                        cursor.EmitDelegate<Action<CharacterBody>>(body =>
+                        cursor.Emit(OpCodes.Ldloc_0);
+                        cursor.EmitDelegate<Action<CharacterBody, CharacterBody.DelayedDamageInfo>>((body, damageInfo) =>
                         {
-                            if (body.GetBuffCount(DLC2Content.Buffs.DelayedDamageDebuff) <= 0)
-                            {
-                                body.delayedDamageRefreshTime = 0;
-                            }
+                            damageInfo.timeUntilDamage = MainConfig.CWE_Delay.Value;
                         });
                     }
                     else
                     {
-                        Logger.LogWarning("Warped Echo - Failure to hook delayed damage");
+                        Logger.LogWarning("Warped Echo - Failure to hook timer");
                     }
                 };
-            }
-            if (MainConfig.WarpedEchoFixEnabled.Value || MainConfig.WarpedEchoReworkEnabled.Value)
-            {
-                // Makes Delayed Damage not trigger on lethal hits
-                IL.RoR2.HealthComponent.TakeDamageProcess += il =>
+
+                // Set refresh immediately
+                IL.RoR2.CharacterBody.UpdateSecondHalfOfDamage += il =>
                 {
                     var cursor = new ILCursor(il);
-
                     if (cursor.TryGotoNext(
-                        x => x.MatchLdfld<HealthComponent>(nameof(HealthComponent.body)),
-                        x => x.MatchLdsfld(typeof(DLC2Content.Buffs), nameof(DLC2Content.Buffs.DelayedDamageBuff)),
-                        x => x.MatchCallvirt<CharacterBody>(nameof(CharacterBody.HasBuff))
+                        x => x.MatchCall<CharacterBody>(nameof(CharacterBody.RemoveBuff))
                     ))
                     {
-                        cursor.Index += 6;
-                        cursor.RemoveRange(2);
+                        cursor.Index++;
                         cursor.Emit(OpCodes.Ldarg_0);
-                        cursor.EmitDelegate<Func<HealthComponent, float>>(self => self.health * MainConfig.CWE_Cap.Value);
-                        var label = il.DefineLabel();
-                        cursor.Emit(OpCodes.Bgt_Un, label);
-
-                        if (cursor.TryGotoNext(
-                            x => x.MatchLdarg(1),
-                            x => x.MatchLdfld<DamageInfo>(nameof(DamageInfo.damageType)),
-                            x => x.MatchLdcI4(0x10000),
-                            x => x.MatchCall<DamageTypeCombo>("op_Implicit"),
-                            x => x.MatchCall<DamageTypeCombo>("op_BitwiseAnd")
-                        ))
+                        cursor.EmitDelegate<Action<CharacterBody>>(body =>
                         {
-                            cursor.MarkLabel(label);
+                            body.AddBuff(DLC2Content.Buffs.DelayedDamageBuff);
+                        });
+                    }
+                };
+                
+                // New logic behind losing and gaining Warped Echos.
+                On.RoR2.CharacterBody.UpdateDelayedDamage += (orig, self, deltaTime) =>
+                {
+                    if (!NetworkServer.active)
+                    {
+                        Debug.LogWarning("[Server] function 'System.Void RoR2.CharacterBody::UpdateDelayedDamage(System.Single)' called on client");
+                        return;
+                    }
+
+                    int itemCount = self.inventory ? self.inventory.GetItemCount(DLC2Content.Items.DelayedDamage) : 0;
+                    if (itemCount > 0)
+                    {
+                        itemCount = 1 + MainConfig.CWE_Stack.Value * (itemCount - 1);
+                        int buffCount = self.GetBuffCount(DLC2Content.Buffs.DelayedDamageBuff);
+                        if (self.oldDelayedDamageCount != itemCount)
+                        {
+                            int newDiff = itemCount - self.oldDelayedDamageCount;
+                            if (newDiff > 0)
+                            {
+                                for (int i = 0; i < Math.Abs(newDiff); i++)
+                                {
+                                    self.AddBuff(DLC2Content.Buffs.DelayedDamageBuff);
+                                }
+                            }
+                            else
+                            {
+                                for (int i = 0; i < Math.Abs(newDiff); i++)
+                                {
+                                    self.RemoveBuff(DLC2Content.Buffs.DelayedDamageBuff);
+                                }
+                            }
                         }
+                        self.oldDelayedDamageCount = itemCount;
                     }
                     else
                     {
-                        Logger.LogWarning("Warped Echo - Failure to hook");
+                        self.oldDelayedDamageCount = 0;
+                        self.RemoveBuff(DLC2Content.Buffs.DelayedDamageBuff);
+                        self.RemoveBuff(DLC2Content.Buffs.DelayedDamageDebuff);
+                        self.RemoveOldestTimedBuff(DLC2Content.Buffs.DelayedDamageDebuff);
                     }
                 };
             }
