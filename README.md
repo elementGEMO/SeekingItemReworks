@@ -10,7 +10,7 @@ These reworks aren't limited to just Seekers of the Storm, and may extend toward
 ## Seekers of the Storm Reworks
 | Icon | Item | Description | Notes |
 |-|-|------|-|
-|![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/3/3e/Warped_Echo.png/revision/latest/scale-to-width-down/33?cb=20240828192226)|Warped Echo|**Incoming damage** is split **50%**, with the other **50%** delayed for **4s** _(+1 instance per stack)_. Recharges one instance after delayed damage.|Now feels more reliable with fewer stacks.|
+|![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/3/3e/Warped_Echo.png/revision/latest/scale-to-width-down/33?cb=20240828192226)|Warped Echo|**Incoming damage** is split **50%**, with the other **50%** delayed for **4s** _(+1 instances per stack)_. Recharges one instance after delayed damage.|Now feels more reliable with fewer stacks.|
 |![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/d/d0/Chronic_Expansion.png/revision/latest/scale-to-width-down/33?cb=20240828192616)|Chronic Expansion|**Killing 5 enemies** in combat buffs damage by **7%** _(+5% per stack)_ temporarily each time, until leaving combat.|No longer misleading stacking.|
 |![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/d/d0/Knockback_Fin.png/revision/latest/scale-to-width-down/33?cb=20240828192744)|Flying Fin|**5%** _(+2% per stack)_ chance on hit to **knock enemies into the air**. Deal **+10%** _(+10% per stack)_ damage to **airborne** enemies.|Focused on anti-air instead.|
 |![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/5/50/Bolstering_Lantern.png/revision/latest/scale-to-width-down/33?cb=20240828192831)|Bolstering Lantern|Not Implemented|N/A|
