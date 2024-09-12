@@ -46,6 +46,17 @@ namespace SeekerItems
         public static ConfigEntry<float> CKF_DBase;
         public static ConfigEntry<float> CKF_DStack;
 
+        // Bolstering Lantern
+        public static ConfigEntry<bool> BolsteringLanternReworkEnabled;
+        public static ConfigEntry<bool> BolsteringLanternAltReworkEnabled;
+
+        public static ConfigEntry<int> CBL_HealthBelow;
+        public static ConfigEntry<int> CBL_HealthAbove;
+        public static ConfigEntry<float> CBL_BBase;
+        public static ConfigEntry<float> CBL_BStack;
+        public static ConfigEntry<float> CBL_ProcBase;
+        public static ConfigEntry<float> CBL_ProcStack;
+
         // Antler Shield
         public static ConfigEntry<bool> AntlerShieldReworkEnabled;
 
@@ -73,6 +84,16 @@ namespace SeekerItems
             CKF_KStack = plugin.Config.Bind("Knockback Fin", "! Knock Stack !", 2.0f, "[ Applies to Rework Only ]\nThe extra percentage chance to trigger when stacking.\n- 2.0 = +2% per stack to trigger.\n");
             CKF_DBase = plugin.Config.Bind("Knockback Fin", "! Damage Base Stack !", 10.0f, "[ Applies to Rework Only ]\nThe damage percentage to airborne enemies.\n- 10.0 = 10% extra damage to airborne enemies.\n");
             CKF_DStack = plugin.Config.Bind("Knockback Fin", "! Damage Stack !", 10.0f, "[ Applies to Rework Only ]\nThe extra damage percentage to airborne enemies when stacking.\n- 10.0 = +10% extra damage per stack to airborne enemies.\n");
+
+            BolsteringLanternReworkEnabled = plugin.Config.Bind("Bolstering Lantern", "Enable Rework?", true, "Changes Bolstering Lantern to ignite, and buff lasts until healed to a certain health.");
+            BolsteringLanternAltReworkEnabled = plugin.Config.Bind("Bolstering Lantern", "Enable Alt Rework?", false, "Changes Bolstering Lantern to let allies...");
+
+            CBL_HealthBelow = plugin.Config.Bind("Bolstering Lantern", "! Health Below Trigger !", 50, "[ Applies to Rework Only ]\nWhat percent of health to fall below to trigger buff.\n- 50 = Falling below 50% health.\n");
+            CBL_HealthAbove = plugin.Config.Bind("Bolstering Lantern", "! Health Recover Trigger !", 90, "[ Applies to Rework Only ]\nWhat percent of health to recover to remove buff.\n- 90 = Health restored to 90%.\n");
+            CBL_BBase = plugin.Config.Bind("Bolstering Lantern", "! Ignite Damage Base Stack !", 20.0f, "[ Applies to Rework & Alt Rework ]\nThe base ignite damage.\n- 20.0 = 20% damage.\n");
+            CBL_BStack = plugin.Config.Bind("Bolstering Lantern", "! Ignite Damage Stack !", 20.0f, "[ Applies to Rework & Alt Rework ]\nThe extra ignite damage per stack.\n- 20.0 = +20% damage per stack.\n");
+            CBL_ProcBase = plugin.Config.Bind("Bolstering Lantern", "! Ignite Base Chance !", 3.0f, "[ Applies to Alt Rework Only ]\nBase chance to ignite on hit.\n- 3.0 = 3% chance.\n");
+            CBL_ProcStack = plugin.Config.Bind("Bolstering Lantern", "! Ignite Stack Chance !", 3.0f, "[ Applies to Alt Rework Only ]\nExtra chance to ignite on hit per stack.\n- 3.0 = +3% chance per stack.\n");
 
             AntlerShieldReworkEnabled = plugin.Config.Bind("Antler Shield", "Enable Rework?", true, "Changes Antler Shield to scale armor off of speed, and gives slightly extra speed.");
 

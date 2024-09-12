@@ -18,6 +18,11 @@ namespace SeekerItems
                 SetNewDesc(new KnockbackFin(), MainConfig.CursedRewording.Value);
                 SetNewName(new KnockbackFin(), "Flying Fin", MainConfig.CursedRewording.Value, "Knockup Fin");
             }
+            if (MainConfig.BolsteringLanternReworkEnabled.Value || MainConfig.BolsteringLanternAltReworkEnabled.Value)
+            {
+                SetNewDesc(new BolsteringLantern(), MainConfig.BolsteringLanternAltReworkEnabled.Value);
+                SetNewName(new BolsteringLantern(), "Smoldering Lantern");
+            }
             if (MainConfig.AntlerShieldReworkEnabled.Value) { SetNewDesc(new AntlerShield()); }
 
             // Uncommon
@@ -29,6 +34,13 @@ namespace SeekerItems
 
             // Equipment
             if (MainConfig.SeedOfLifeRewriteEnabled.Value) { SetNewDesc(new SeedOfLife(), false, "EQUIPMENT_"); }
+
+            MiscInit();
+        }
+
+        private static void MiscInit()
+        {
+            if (MainConfig.StealthKitCleanse.Value) { SetNewDesc(new OldWarStealthKit()); }
         }
 
         public static void SetNewDesc(RiskItem ItemInfo, bool doAlt = false, string forcedPrefix = "ITEM_")
