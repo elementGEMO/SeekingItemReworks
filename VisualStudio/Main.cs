@@ -367,19 +367,23 @@ namespace SeekerItems
                 On.RoR2.CharacterBody.FixedUpdate += (orig, body) =>
                 {
                     orig(body);
-                    int lanternCount = body.inventory ? body.inventory.GetItemCount(DLC2Content.Items.LowerHealthHigherDamage) : 0;
-                    //setLanternCount(body, lanternCount);
-                    //if (body) setLanternCount(body, lanternCount);
-
-                    MinionOwnership.MinionGroup allies = MinionOwnership.MinionGroup.FindGroup(body.master.netId);
-                    if (allies == null) return;
-                    foreach (MinionOwnership specificAlly in allies.members)
+                    int lanternCount = (body && body.inventory) ? body.inventory.GetItemCount(DLC2Content.Items.LowerHealthHigherDamage) : 0;
+                    if (lanternCount > 0)
                     {
-                        if (specificAlly == null) continue;
-                        CharacterMaster allyMaster = specificAlly.GetComponent<CharacterMaster>();
-                        if (allyMaster && allyMaster.inventory)
+                        MinionOwnership.MinionGroup allyList = MinionOwnership.MinionGroup.FindGroup(body.masterObjectId);
+                        body.SetBuffCount(LanternCountBuff.LanternCounter.buffIndex, lanternCount);
+
+                        if (allyList != null)
                         {
-                            if (allyMaster.GetBody()) setLanternCount(allyMaster.GetBody(), lanternCount);
+                            foreach (MinionOwnership ally in allyList.members)
+                            {
+                                if (ally == null) continue;
+                                CharacterMaster allyMaster = ally.GetComponent<CharacterMaster>();
+                                if (allyMaster && allyMaster.inventory)
+                                {
+                                    if (allyMaster.GetBody()) allyMaster.GetBody().SetBuffCount(LanternCountBuff.LanternCounter.buffIndex, lanternCount);
+                                }
+                            }
                         }
                     }
                 };
@@ -392,6 +396,7 @@ namespace SeekerItems
                     {
                         CharacterBody allyBody = damageInfo.attacker.GetComponent<CharacterBody>();
                         int countBuffs = allyBody.GetBuffCount(LanternCountBuff.LanternCounter);
+
                         if (allyBody && countBuffs > 0 && Util.CheckRoll(MainConfig.CBL_ProcBase.Value + MainConfig.CBL_ProcStack.Value * (countBuffs - 1), 0f, null))
                         {
                             Inventory targetInventory = (allyBody.master.minionOwnership.group != null && allyBody.master.minionOwnership.group.resolvedOwnerMaster) ? allyBody.master.minionOwnership.group.resolvedOwnerMaster.inventory : allyBody.inventory;
@@ -407,36 +412,8 @@ namespace SeekerItems
                             StrengthenBurnUtils.CheckDotForUpgrade(targetInventory, ref burnDot);
                             DotController.InflictDot(ref burnDot);
                         }
-
-                        int countItems = allyBody.inventory ? allyBody.inventory.GetItemCount(DLC2Content.Items.LowerHealthHigherDamage) : 0;
-                        if (countItems > 0 && Util.CheckRoll(MainConfig.CBL_ProcBase.Value + MainConfig.CBL_ProcStack.Value * (countItems - 1), 0f, null))
-                        {
-                            InflictDotInfo burnDot = new()
-                            {
-                                attackerObject = damageInfo.attacker,
-                                victimObject = victim,
-                                totalDamage = new float?(damageInfo.damage * (MainConfig.CBL_BBase.Value + MainConfig.CBL_BStack.Value * (countItems - 1)) / 100f),
-                                damageMultiplier = 1.0f,
-                                duration = 0.1f,
-                                dotIndex = DotController.DotIndex.Burn,
-                            };
-                            StrengthenBurnUtils.CheckDotForUpgrade(allyBody.inventory, ref burnDot);
-                            DotController.InflictDot(ref burnDot);
-                        }
                     }
                 };
-
-                static void setLanternCount(CharacterBody ally, int itemCount)
-                {
-                    if (ally.GetBuffCount(LanternCountBuff.LanternCounter) != itemCount)
-                    {
-                        ally.SetBuffCount(LanternCountBuff.LanternCounter.buffIndex, itemCount);
-                    } 
-                    else if (ally.HasBuff(LanternCountBuff.LanternCounter) && itemCount <= 0)
-                    {
-                        ally.SetBuffCount(LanternCountBuff.LanternCounter.buffIndex, 0);
-                    }
-                }
             }
 
             // Antler Shield Rework
