@@ -14,7 +14,6 @@ These reworks aren't limited to just Seekers of the Storm, and may extend toward
 |![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/d/d0/Chronic_Expansion.png/revision/latest/scale-to-width-down/33?cb=20240828192616)|Chronic Expansion|**Killing 5 enemies** in combat buffs damage by **7%** _(+5% per stack)_ temporarily each time, until leaving combat.|No longer misleading stacking.|
 |![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/d/d0/Knockback_Fin.png/revision/latest/scale-to-width-down/33?cb=20240828192744)|Flying Fin|**5%** _(+2% per stack)_ chance on hit to **knock enemies into the air**. Deal **+10%** _(+10% per stack)_ damage to **airborne** enemies.|Focused on anti-air instead.|
 |![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/5/50/Bolstering_Lantern.png/revision/latest/scale-to-width-down/33?cb=20240828192831)|Smoldering Lantern|Falling below **50% health** grants a buff that **ignites** enemies for **20%** _(+20% per stack)_ base damage on hit, until **health** is restored to **90%**.|Main rework, meant to work with ignition tank.|
-|![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/5/50/Bolstering_Lantern.png/revision/latest/scale-to-width-down/33?cb=20240828192831)|Smoldering Lantern|**3%** _(+3% per stack)_ chance on hit to **ignite enemies** for **20%** _(+20% per stack)_ base damage. This item is **inherited by allies** and is boosted with **Ignition Tank**.|Alt rework in configs, makes allies ignite on hit.|
 |![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/f/f6/Antler_Shield.png/revision/latest/scale-to-width-down/33?cb=20240828193005)|Antler Shield|Increase **armor** by **10%** _(+10% per stack)_ of **current movement speed**. Increase **movement speed** by **7%** _(+7% per stack)_.|Why not have more armor?|
 |![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/e/e5/Chance_Doll.png/revision/latest/scale-to-width-down/33?cb=20240828192258)|Chance Doll|Not Implemented|N/A|
 |![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/3/36/Prayer_Beads.png/revision/latest/scale-to-width-down/33?cb=20240828192333)|Prayer Beads|Not Implemented|N/A|
@@ -30,6 +29,11 @@ These reworks aren't limited to just Seekers of the Storm, and may extend toward
 |![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/8/8b/Longstanding_Solitude.png/revision/latest/scale-to-width-down/33?cb=20240828181518)|Longstanding Solitude|Not Implemented|N/A|
 |![](https://github.com/elementGEMO/SeekingItemReworks/blob/master/MarkdownVisuals/NewLunarDownside.png?raw=true)|Despair|Not Implemented|N/A|
 |![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/9/9e/Seed_of_Life.png/revision/latest/scale-to-width-down/33?cb=20240828191958)|Seed of Life|**Returns** the user **to life upon death** or dead allies on use. Equipment is **consumed** on use|Just rewording.|
+
+##### ( Alternative Reworks in Config )
+| Icon | Item | Description | Notes |
+|-|-|------|-|
+|![](https://static.wikia.nocookie.net/riskofrain2_gamepedia_en/images/5/50/Bolstering_Lantern.png/revision/latest/scale-to-width-down/33?cb=20240828192831)|Smoldering Lantern|**3%** _(+3% per stack)_ chance on hit to **ignite enemies** for **20%** _(+20% per stack)_ base damage. This item is **inherited by allies** and is boosted with **Ignition Tank**.|Focused on improving allies and yourself.|
 
 ## Survivors of the Void
 | Icon | Item | Description | Notes |
