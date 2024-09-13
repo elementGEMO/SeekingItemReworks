@@ -11,10 +11,6 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using EntityStates;
 using UnityEngine.Networking;
-using System.Collections;
-using System.Linq;
-using static UnityEngine.UI.GridLayoutGroup;
-
 namespace SeekerItems
 {
     [BepInDependency(ItemAPI.PluginGUID)]
