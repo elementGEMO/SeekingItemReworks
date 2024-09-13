@@ -1,4 +1,8 @@
 ### Changelog
+## Version 1.2.1
+- Modified README.md to instead include alternative reworks at the bottom of respective category
+- Fixed Smoldering Lantern Alt rework spamming NREs to enemies that have minions
+
 ## Version 1.2.0
 - Two different reworks for Bolstering Lantern, one fire, and one ally focused
 - Fixed Unstable Transmitter still making you invincible.
