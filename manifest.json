@@ -1,8 +1,8 @@
 {
     "name": "SeekingItemReworks",
-    "version_number": "1.2.0",
+    "version_number": "1.2.1",
     "website_url": "https://github.com/elementGEMO/SeekingItemReworks",
-    "description": "Reworks Seekers of the Storm items. Extremely configurable! [9/18] - Two new reworks for Bolstsering Lantern.",
+    "description": "Reworks Seekers of the Storm items and other items. Extremely configurable! [9/18] + [2] | Smoldering Lantern hotfix.",
     "dependencies": [
         "RiskofThunder-R2API_Core-5.1.1",
         "RiskofThunder-R2API_ContentManagement-1.0.6",
