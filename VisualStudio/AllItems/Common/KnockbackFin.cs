@@ -1,19 +1,41 @@
-﻿using System;
+﻿using BepInEx.Configuration;
+using System;
 using static SeekingItemReworks.ColorCode;
 
-namespace SeekerItems.Common
+namespace SeekerItems
 {
-    internal class KnockbackFin : RiskItem
+    internal class KnockbackFin : ItemTemplate
     {
-        public KnockbackFin() : base(
-            "KNOCKBACKHITENEMIES",
-            "Chance on hit to knock enemies into the air.\nDeal bonus damage to airborne enemies.",
-            string.Format("{0}% ".Style(Color.cIsUtility) + "(+{1}% per stack) ".Style(Color.cStack) + "chance on hit to " + "knock enemies into the air".Style(Color.cIsUtility) + ". Deal " + "+{2}% ".Style(Color.cIsDamage) + "(+{3}% per stack) ".Style(Color.cStack) + "damage to " + "airborne ".Style(Color.cIsUtility) + "enemies.",
-                Math.Round(MainConfig.CKF_KBase.Value, roundVal), Math.Round(MainConfig.CKF_KStack.Value, roundVal), Math.Round(MainConfig.CKF_DBase.Value, roundVal), Math.Round(MainConfig.CKF_DStack.Value, roundVal)),
+        public KnockbackFin(int descType)
+        {
+            ItemInternal = "KNOCKBACKHITENEMIES";
+            if (descType == 1)
+            {
+                ItemInfo = "Chance on hit to knock enemies into the air.\nDeal bonus damage to airborne enemies.";
+                ItemDesc = string.Format(
+                    "{0}% ".Style(Color.cIsUtility) + "(+{1}% per stack) ".Style(Color.cStack) + "chance on hit to " + "knock up enemies".Style(Color.cIsUtility) + ". Deal " + "+{2}% ".Style(Color.cIsDamage) + "(+{3}% per stack) ".Style(Color.cStack) + "damage to " + "airborne ".Style(Color.cIsUtility) + "enemies.",
+                    Math.Round(Chance_Base.Value, roundVal), Math.Round(Chance_Stack.Value, roundVal),
+                    Math.Round(Damage_Base.Value, roundVal), Math.Round(Damage_Stack.Value, roundVal)
+                );
+            }
+            else if (descType == -1)
+            {
+                ItemInfo = "Chance on hit to knock up enemies.\nDeal bonus damage to airborne enemies.";
+                ItemDesc = string.Format(
+                    "{0}% ".Style(Color.cIsUtility) + "(+{1}% per stack) ".Style(Color.cStack) + "chance on hit to " + "knock up enemies".Style(Color.cIsUtility) + ". Deal " + "+{2}% ".Style(Color.cIsDamage) + "(+{3}% per stack) ".Style(Color.cStack) + "damage to " + "airborne ".Style(Color.cIsUtility) + "enemies.",
+                    Math.Round(Chance_Base.Value, roundVal), Math.Round(Chance_Stack.Value, roundVal),
+                    Math.Round(Damage_Base.Value, roundVal), Math.Round(Damage_Stack.Value, roundVal)
+                );
+            }
+        }
 
-            "Chance on hit to knock up enemies.\nDeal bonus damage to airborne enemies.",
-            string.Format("{0}% ".Style(Color.cIsUtility) + "(+{1}% per stack) ".Style(Color.cStack) + "chance on hit to " + "knock up enemies".Style(Color.cIsUtility) + ". Deal " + "+{2}% ".Style(Color.cIsDamage) + "(+{3}% per stack) ".Style(Color.cStack) + "damage to " + "airborne ".Style(Color.cIsUtility) + "enemies.",
-                Math.Round(MainConfig.CKF_KBase.Value, roundVal), Math.Round(MainConfig.CKF_KStack.Value, roundVal), Math.Round(MainConfig.CKF_DBase.Value, roundVal), Math.Round(MainConfig.CKF_DStack.Value, roundVal))
-        ) { }
+        public static string StaticName = "Knockback Fin";
+
+        public static ConfigEntry<int> Rework;
+        public static ConfigEntry<bool> IsHyperbolic;
+        public static ConfigEntry<float> Chance_Base;
+        public static ConfigEntry<float> Chance_Stack;
+        public static ConfigEntry<float> Damage_Base;
+        public static ConfigEntry<float> Damage_Stack;
     }
 }

@@ -9,10 +9,10 @@ namespace EntityStates
         public override void OnEnter()
         {
             base.OnEnter();
-            int stackCount = characterBody.inventory.GetItemCount(DLC2Content.Items.TeleportOnLowHealth);
+            int itemCount = characterBody.inventory.GetItemCount(DLC2Content.Items.TeleportOnLowHealth);
             characterGravityParameterProvider = gameObject.GetComponent<ICharacterGravityParameterProvider>();
             characterFlightParameterProvider = gameObject.GetComponent<ICharacterFlightParameterProvider>();
-            duration = (float)MainConfig.UUT_DBase.Value + MainConfig.UUT_DStack.Value * (stackCount - 1);
+            duration = (float) UnstableTransmitter.Duration_Base.Value + UnstableTransmitter.Duration_Stack.Value * (itemCount - 1);
 
             Transform modelTransform = GetModelTransform();
             characterModel = modelTransform.GetComponent<CharacterModel>();
@@ -34,14 +34,14 @@ namespace EntityStates
                 EffectManager.SpawnEffect(CharacterBody.CommonAssets.teleportOnLowHealthExplosion, new EffectData
                 {
                     origin = transform.position,
-                    scale = 30,
+                    scale = UnstableTransmitter.Range.Value,
                     rotation = Quaternion.identity
                 }, true);
 
                 repeatVFX = 0.15f;
             }
 
-            if (MainConfig.UnstableTransmitterFloatEnabled.Value)
+            if (UnstableTransmitter.IsFloat.Value)
             {
                 if (characterGravityParameterProvider != null)
                 {
@@ -85,7 +85,7 @@ namespace EntityStates
                 }, true);
             }
 
-            if (MainConfig.UnstableTransmitterFloatEnabled.Value)
+            if (UnstableTransmitter.IsFloat.Value)
             {
                 if (characterFlightParameterProvider != null)
                 {
