@@ -217,8 +217,8 @@ namespace SeekerItems
             );
             SaleStar.Consume_Stack = plugin.Config.Bind(
                 DLC2 + SaleStar.StaticName,
-                "! Rework #1 - Stack Chance !", 10f,
-                "[ 10.0 = -10% Chance ]\nLess chance for consume per stack"
+                "! Rework #1 - Stack Chance !", 7.5f,
+                "[ 7.5 = -7.5% Chance ]\nLess chance for consume per stack"
             );
 
             // Unstable Transmitter
