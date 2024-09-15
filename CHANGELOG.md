@@ -1,4 +1,12 @@
 ### Changelog
+## Version 1.3.0
+- Complete reprogram of this entire mod - Hopefully even more compatible!
+- New Sale Star rework
+- Slightly adjusted the default stats on some items for general balance
+- Overhauled the config screen, and added a few more adjustable stats for items
+- Replaced the VFX of War Bonds to instead apply to all free purchases instead - Configurable in next update
+- Hopefully less bugs in general, please report any new ones to me
+  
 ## Version 1.2.1
 - Modified README.md to instead include alternative reworks at the bottom of respective category
 - Fixed Smoldering Lantern Alt rework spamming NREs to enemies that have minions
