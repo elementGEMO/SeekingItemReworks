@@ -7,13 +7,9 @@ using System;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-using System.Threading.Tasks;
 using System.Collections.Generic;
 using EntityStates;
 using UnityEngine.Networking;
-using System.ComponentModel;
-using System.Collections;
-using R2API.Utils;
 namespace SeekerItems
 {
     [BepInDependency(ItemAPI.PluginGUID)]
@@ -25,7 +21,7 @@ namespace SeekerItems
         public const string PluginGUID = PluginAuthor + "." + PluginName;
         public const string PluginAuthor = "noodlegemo";
         public const string PluginName = "SeekingItemReworks";
-        public const string PluginVersion = "1.3.0";
+        public const string PluginVersion = "1.3.1";
 
         public void Awake()
         {
