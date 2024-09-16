@@ -1,4 +1,9 @@
 ### Changelog
+## Version 1.3.1
+- Fixed Unstable Transmitter activating from receiving any damage
+- Adjusted the damage applied for Unstable Transmitter to do higher damage once again from pre-reprogram
+- Just a reminder to delete your config file to make a new one
+
 ## Version 1.3.0
 - Complete reprogram of this entire mod - Hopefully even more compatible!
 - New Sale Star rework
