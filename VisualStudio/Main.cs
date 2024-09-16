@@ -199,15 +199,13 @@ namespace SeekerItems
                     var itemIndex = -1;
 
                     if (cursor.TryGotoNext(
-                        x => x.MatchStloc(out itemIndex),
-                        x => x.MatchLdloc(out _),
+                        x => x.MatchLdloc(out itemIndex),
                         x => x.MatchLdcI4(out _),
                         x => x.MatchBle(out _),
                         x => x.MatchLdloc(out _),
                         x => x.MatchCallOrCallvirt<CharacterBody>("get_isBoss")
                     ))
                     {
-                        cursor.Index++;
                         cursor.Emit(OpCodes.Ldloc, itemIndex);
                         cursor.EmitDelegate<Func<int, int>>(itemCount => { return -1; });
                         cursor.Emit(OpCodes.Stloc, itemIndex);
@@ -614,54 +612,13 @@ namespace SeekerItems
                                 attackerObject = self.gameObject,
                                 victimObject = victimBody.gameObject,
                                 dotIndex = DotController.DotIndex.Bleed,
-                                totalDamage = (float)self.damage * (UnstableTransmitter.Damage_Base.Value + UnstableTransmitter.Damage_Stack.Value * (itemCount - 1)) / 100f,
-                                damageMultiplier = 1.0f
+                                damageMultiplier = self.damage * ((UnstableTransmitter.Damage_Base.Value + UnstableTransmitter.Damage_Stack.Value * (itemCount - 1)) / 150f),
+                                duration = 3.0f
                             };
                             DotController.InflictDot(ref bleedDot);
                         }
                     }
                 };
-
-                /*
-                // Change refresh duration & remove invincibility
-                IL.RoR2.HealthComponent.UpdateLastHitTime += il =>
-                {
-                    var cursor = new ILCursor(il);
-                    var durationIndex = -1;
-
-                    if (cursor.TryGotoNext(
-                        x => x.MatchStloc(out durationIndex),
-                        x => x.MatchLdarg(0),
-                        x => x.MatchLdfld<HealthComponent>(nameof(HealthComponent.body)),
-                        x => x.MatchLdsfld(typeof(DLC2Content.Buffs), nameof(DLC2Content.Buffs.TeleportOnLowHealthCooldown)),
-                        x => x.MatchLdloc(out _)
-                    ))
-                    {
-                        cursor.Index++;
-                        cursor.Emit(OpCodes.Ldloc_S, durationIndex);
-                        cursor.EmitDelegate<Func<float, float>>(duration => UnstableTransmitter.Refresh.Value);
-                        cursor.Emit(OpCodes.Stloc_S, durationIndex);
-                    }
-                    else
-                    {
-                        Logger.LogWarning(UnstableTransmitter.StaticName + " #1 - IL Fail #1");
-                    }
-
-                    if (cursor.TryGotoNext(
-                        x => x.MatchLdsfld(typeof(RoR2Content.Buffs), nameof(RoR2Content.Buffs.HiddenInvincibility)),
-                        x => x.MatchLdcR4(out _),
-                        x => x.MatchCallvirt<CharacterBody>(nameof(CharacterBody.AddTimedBuff))
-                    ))
-                    {
-                        cursor.Index += 2;
-                        cursor.EmitDelegate<Func<float, float>>(duration => 0f);
-                    }
-                    else
-                    {
-                        Logger.LogWarning(BolsteringLantern.StaticName + " #1 - IL Fail #2");
-                    }
-                };
-                */
 
                 // Disabling original condition
                 IL.RoR2.HealthComponent.UpdateLastHitTime += il =>
@@ -692,7 +649,7 @@ namespace SeekerItems
                         float healthPercent = (float)(self.health + self.shield) / self.combinedHealth;
                         int itemCount = self.body.inventory ? self.body.inventory.GetItemCount(DLC2Content.Items.TeleportOnLowHealth) : 0;
                         bool hasBuff = self.body ? self.body.HasBuff(DLC2Content.Buffs.TeleportOnLowHealth) : false;
-                        if (healthPercent <= UnstableTransmitter.LowHealth.Value && itemCount > 0 && hasBuff)
+                        if (healthPercent <= (UnstableTransmitter.LowHealth.Value / 100f) && itemCount > 0 && hasBuff)
                         {
                             self.body.hasTeleported = true;
                             self.body.RemoveBuff(DLC2Content.Buffs.TeleportOnLowHealth);
