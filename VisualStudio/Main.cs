@@ -10,6 +10,10 @@ using UnityEngine.AddressableAssets;
 using System.Collections.Generic;
 using EntityStates;
 using UnityEngine.Networking;
+using SeekingItemReworks;
+
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
+
 namespace SeekerItems
 {
     [BepInDependency(ItemAPI.PluginGUID)]
@@ -29,6 +33,8 @@ namespace SeekerItems
 
             MainConfig.SetUpConfigs(this);
             new ItemInfo();
+
+            //NoxiousAura.Awake();
 
             SetUpCommonItems();
             SetUpUncommonItems();
