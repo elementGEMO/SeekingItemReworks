@@ -1,4 +1,9 @@
 ### Changelog
+## Version 1.4.0
+- New Noxious Thorn rework - Can change the type of DoT it applies via config
+- Not entirely tested for networking, have fun until I get nagged about this
+- Slight wording adjustment to Unstable Transmitter to be more relative to Tri-Tip and Shatterspleen.
+
 ## Version 1.3.1
 - Fixed Unstable Transmitter activating from receiving any damage
 - Adjusted the damage applied for Unstable Transmitter to do higher damage once again from pre-reprogram
