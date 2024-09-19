@@ -28,6 +28,7 @@ namespace SeekerItems
             // Uncommon Tier Items
             if (SaleStar.Rework.Value == 1) { SetDesc(new SaleStar(SaleStar.Rework.Value)); }
             if (UnstableTransmitter.Rework.Value == 1) { SetDesc(new UnstableTransmitter(UnstableTransmitter.Rework.Value)); }
+            if (NoxiousThorn.Rework.Value == 1) { SetDesc(new NoxiousThorn(NoxiousThorn.Rework.Value)); }
 
             // Legendary Tier Items
             if (WarBonds.Rework.Value == 1) { SetDesc(new WarBonds(WarBonds.Rework.Value)); }

@@ -663,6 +663,37 @@ namespace SeekerItems
                 };
             }
 
+            // Noxious Thorn #1
+            if (NoxiousThorn.Rework.Value == 1)
+            {
+                // Remove vanilla effect
+                IL.RoR2.HealthComponent.TakeDamageProcess += il =>
+                {
+                    var cursor = new ILCursor(il);
+                    if (cursor.TryGotoNext(
+                        /*
+                        x => x.MatchLdsfld(typeof(DLC2Content.Items), nameof(DLC2Content.Items.LowerPricedChests)),
+                        x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCount)),
+                        x => x.MatchLdcI4(out _)
+                        */
+                        //x => x.MatchLdcI4(out _),
+                        x => x.MatchBle(out _),
+                        x => x.MatchLdcR4(out _),
+                        x => x.MatchLdcR4(out _),
+                        x => x.MatchLdnull(),
+                        x => x.MatchCallOrCallvirt(typeof(Util), nameof(Util.CheckRoll)),
+                        x => x.MatchBrfalse(out _)
+                    ))
+                    {
+                        cursor.EmitDelegate<Func<int, int>>(stack => int.MaxValue);
+                    }
+                    else
+                    {
+                        Logger.LogWarning(NoxiousThorn.StaticName + " #1 - IL Fail #1");
+                    }
+                };
+            }
+
             // -- Risk of Rain 2 Content -- \\
 
             // Old War Stealthkit #1

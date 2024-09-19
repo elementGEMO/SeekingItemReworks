@@ -274,6 +274,64 @@ namespace SeekerItems
                 "[ 1.0 = +1 Second ]\nEffect duration per stack"
             );
 
+            // Noxious Thorn
+            NoxiousThorn.Rework = plugin.Config.Bind(
+                DLC2 + NoxiousThorn.StaticName,
+                "Toggle Rework", 1,
+                new ConfigDescription(
+                    "[ 0 = Vanilla | 1 = Rework #1 ]",
+                    new AcceptableValueRange<int>(0, 1)
+                )
+            );
+            NoxiousThorn.Inflict_Type = plugin.Config.Bind(
+                DLC2 + NoxiousThorn.StaticName,
+                "! Rework #1 - Type of Damage !", 2,
+                new ConfigDescription(
+                    "[ 0 = Bleed | 1 = Poison | 2 = Blight ]",
+                    new AcceptableValueRange<int>(0, 2)
+                )
+            );
+            NoxiousThorn.Refresh = plugin.Config.Bind(
+                DLC2 + NoxiousThorn.StaticName,
+                "! Rework #1 - Refresh !", 6f,
+                "[ 6.0 = 6 Seconds ]\nTime until refresh"
+            );
+            NoxiousThorn.Damage_Frequency = plugin.Config.Bind(
+                DLC2 + NoxiousThorn.StaticName,
+                "! Rework #1 - Frequency !", 0.6f,
+                "[ 1.0 = 1 Second ]\nDoT frequency"
+            );
+            NoxiousThorn.Damage_Base = plugin.Config.Bind(
+                DLC2 + NoxiousThorn.StaticName,
+                "! Rework #1 - Base Damage !", 150f,
+                "[ 120.0 = 120% Damage ]\nDoT damage"
+            );
+            NoxiousThorn.Damage_Stack = plugin.Config.Bind(
+                DLC2 + NoxiousThorn.StaticName,
+                "! Rework #1 - Stack Damage !", 150f,
+                "[ 120.0 = +120% Damage ]\nDoT damage per stack"
+            );
+            NoxiousThorn.Initial_Range = plugin.Config.Bind(
+                DLC2 + NoxiousThorn.StaticName,
+                "! Rework #1 - Initial Radius !", 3.5f,
+                "[ 3.5 = 3.5m ]\nRing radius on first hit"
+            );
+            NoxiousThorn.Range_Increment = plugin.Config.Bind(
+                DLC2 + NoxiousThorn.StaticName,
+                "! Rework #1 - Radius Increment !", 1.5f,
+                "[ 1.5 = 1.5m ]\nRing radius per hit"
+            );
+            NoxiousThorn.Base_Cap = plugin.Config.Bind(
+                DLC2 + NoxiousThorn.StaticName,
+                "! Rework #1 - Base radius Cap !", 10f,
+                "[ 10.0 = 10m ]\nMax ring radius"
+            );
+            NoxiousThorn.Stack_Cap = plugin.Config.Bind(
+                DLC2 + NoxiousThorn.StaticName,
+                "! Rework #1 - Stack radius Cap !", 4f,
+                "[ 4.0 = +4m ]\nMore max ring radius per stack"
+            );
+
             // -- Risk of Rain 2 Content -- \\
 
             // Old War Stealthkit
