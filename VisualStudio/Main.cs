@@ -6,11 +6,9 @@ using Mono.Cecil.Cil;
 using System;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-
 using System.Collections.Generic;
 using EntityStates;
 using UnityEngine.Networking;
-using SeekingItemReworks;
 
 [assembly: HG.Reflection.SearchableAttribute.OptIn]
 
@@ -25,7 +23,7 @@ namespace SeekerItems
         public const string PluginGUID = PluginAuthor + "." + PluginName;
         public const string PluginAuthor = "noodlegemo";
         public const string PluginName = "SeekingItemReworks";
-        public const string PluginVersion = "1.3.1";
+        public const string PluginVersion = "1.4.0";
 
         public void Awake()
         {
@@ -33,8 +31,6 @@ namespace SeekerItems
 
             MainConfig.SetUpConfigs(this);
             new ItemInfo();
-
-            //NoxiousAura.Awake();
 
             SetUpCommonItems();
             SetUpUncommonItems();
