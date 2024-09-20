@@ -23,10 +23,12 @@ namespace SeekerItems
         public const string PluginGUID = PluginAuthor + "." + PluginName;
         public const string PluginAuthor = "noodlegemo";
         public const string PluginName = "SeekingItemReworks";
-        public const string PluginVersion = "1.4.0";
+        public const string PluginVersion = "1.4.1";
 
         public void Awake()
         {
+            //On.RoR2.Networking.NetworkManagerSystemSteam.OnClientConnect += (s, u, t) => { }; - Used for Solo Multiplayer testing
+
             Log.Init(Logger);
 
             MainConfig.SetUpConfigs(this);
@@ -281,21 +283,15 @@ namespace SeekerItems
                         Logger.LogWarning(KnockbackFin.StaticName + " #1 - IL Fail #2");
                     }
 
-                    Logger.LogDebug("DamageIndex: " + damageIndex);
-
                     if (cursor.TryGotoNext(
                         x => x.MatchLdloc(out _),
                         x => x.MatchLdarg(0),
                         x => x.MatchCallOrCallvirt<HealthComponent>("get_fullCombinedHealth")
                     ))
                     {
-                        Logger.LogDebug("1");
                         cursor.Emit(OpCodes.Ldarg_0);
-                        Logger.LogDebug("2");
                         cursor.Emit(OpCodes.Ldarg_1);
-                        Logger.LogDebug("3");
                         cursor.Emit(OpCodes.Ldloc, damageIndex);
-                        Logger.LogDebug("4");
 
                         cursor.EmitDelegate<Func<HealthComponent, DamageInfo, float, float>>((healthComponent, damageInfo, damage) =>
                         {
@@ -313,9 +309,7 @@ namespace SeekerItems
                             return damageMod;
                         });
 
-                        Logger.LogDebug("5");
                         cursor.Emit(OpCodes.Stloc, damageIndex);
-                        Logger.LogDebug("6");
                     }
                     else
                     {

@@ -1,4 +1,9 @@
 ### Changelog
+## Version 1.4.1
+- Noxious Thorn Rework #1 - Now the VFX is properly networked for multiplayer!
+- Added a new null check for whenever Frost Relic's particle prefab gets modified
+<br>_( This is due to ``RiskyMod`` disabling the bubble, and causing the mod to stop load times if you didn't config ``RiskyMod`` to disable removing the bubble)_
+
 ## Version 1.4.0
 - New Noxious Thorn rework - Can change the type of DoT it applies via config
 - Not entirely tested for networking, have fun until I get nagged about this

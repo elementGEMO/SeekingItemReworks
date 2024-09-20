@@ -58,5 +58,5 @@ Obviously the goal is to rework all of Seekers of the Storm items.
 - **SomeoneElse** ``@notsomeoneelse``, for heavily assisting me with how to program utilizing IL Hooks.
 - **Bubbet** ``@bubbet``, for assisting me with how to program somewhat.
 - **HIFU** ``@hifuwu``, for answering my extremely redundant programming questions.
-- **.score** ``@.score``, for more of my own dumb guidance.
+- **.score** ``@.score``, for more of my own dumb guidance | Help with Weaver setup.
 - As well as to other modders that have helped me with some other minor programming stuff.

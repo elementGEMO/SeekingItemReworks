@@ -11,7 +11,7 @@ namespace SeekerItems
 {
     public class NoxiousThornBehavior : BaseItemBodyBehavior
     {
-        [ItemDefAssociation(useOnServer = true, useOnClient = true)]
+        [ItemDefAssociation(useOnServer = true, useOnClient = false)]
         public static ItemDef GetItemDef()
         {
             if (NoxiousThorn.Rework.Value == 1)
@@ -25,38 +25,45 @@ namespace SeekerItems
         private static void Init()
         {
             auraEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Icicle/IcicleAura.prefab").WaitForCompletion().InstantiateClone("NoxiousAura", true);
-            var thornAuraController = auraEffect.AddComponent<ThornAuraController>();
-            var icicleAuraController = auraEffect.GetComponent<IcicleAuraController>();
-            thornAuraController.auraParticles = new ParticleSystem[icicleAuraController.auraParticles.Length];
-            Array.Copy(icicleAuraController.auraParticles, thornAuraController.auraParticles, icicleAuraController.auraParticles.Length);
-            foreach (ParticleSystem particleSystem in thornAuraController.auraParticles)
+            var thornController = auraEffect.AddComponent<ThornAuraController>();
+            var frostController = auraEffect.GetComponent<IcicleAuraController>();
+
+            thornController.auraParticles = new ParticleSystem[frostController.auraParticles.Length];
+            Array.Copy(frostController.auraParticles, thornController.auraParticles, frostController.auraParticles.Length);
+
+            foreach (ParticleSystem particleSystem in thornController.auraParticles)
             {
-                ParticleSystemRenderer setParticle = particleSystem.GetComponent<ParticleSystemRenderer>();
-                if (setParticle.name == "Chunks") setParticle.gameObject.SetActive(false);
-                if (setParticle.sharedMaterial)
+                ParticleSystemRenderer renderParticle = (particleSystem) ? particleSystem.GetComponent<ParticleSystemRenderer>() : null;
+                if (renderParticle)
                 {
-                    var newSharedMaterial = new Material(setParticle.sharedMaterial);
-                    var newColor = setParticle.name != "SpinningSharpChunks" ? new Color(0.72f, 0.75f, 0.02f) : new Color(1f, 0f, 0.95f);
-                    newSharedMaterial.SetColor("_Color", newColor);
-                    newSharedMaterial.SetColor("_TintColor", newColor);
-                    newSharedMaterial.SetFloat("_RimStrength", 1.15f);
-                    newSharedMaterial.SetFloat("_IntersectionStrength", 1f);
-                    newSharedMaterial.SetFloat("_BrightnessBoost", 2f);
-                    newSharedMaterial.SetFloat("_SoftFactor", 5f);
-                    newSharedMaterial.SetFloat("_AlphaBoost", 2.5f);
-                    newSharedMaterial.SetFloat("_SoftPower", 0.5f);
-                    setParticle.sharedMaterial = newSharedMaterial;
+                    //ParticleSystemRenderer renderParticle = particleSystem.GetComponent<ParticleSystemRenderer>();
+                    if (renderParticle.name == "Chunks") renderParticle.gameObject.SetActive(false);
+                    if (renderParticle.sharedMaterial)
+                    {
+                        var newMaterial = new Material(renderParticle.sharedMaterial);
+                        Color newColor = renderParticle.name != "SpinningSharpChunks" ? new Color(0.72f, 0.75f, 0.02f) : new Color(1f, 0f, 0.95f);
+                        newMaterial.SetColor("_Color", newColor);
+                        newMaterial.SetColor("_TintColor", newColor);
+                        newMaterial.SetFloat("_RimStrength", 1.15f);
+                        newMaterial.SetFloat("_IntersectionStrength", 1f);
+                        newMaterial.SetFloat("_BrightnessBoost", 2f);
+                        newMaterial.SetFloat("_SoftFactor", 5f);
+                        newMaterial.SetFloat("_AlphaBoost", 2.5f);
+                        newMaterial.SetFloat("_SoftPower", 0.5f);
+                        renderParticle.sharedMaterial = newMaterial;
+                    }
                 }
             }
-            Destroy(icicleAuraController);
+
+            Destroy(frostController);
         }
 
         private void OnEnable()
         {
             On.RoR2.HealthComponent.TakeDamageProcess += increaseCount;
             GameObject gameObject = Instantiate(auraEffect, transform.position, Quaternion.identity);
-            clonedAura = gameObject.GetComponent<ThornAuraController>();
             gameObject.transform.SetParent(transform);
+            clonedAura = gameObject.GetComponent<ThornAuraController>();
             clonedAura.owner = base.gameObject;
             NetworkServer.Spawn(gameObject);
         }
@@ -91,7 +98,6 @@ namespace SeekerItems
             if (damageInfo.damage > 0)
             {
                 duration = durationRefresh;
-                Debug.Log(countHit);
                 countHit++;
             }
         }
@@ -153,12 +159,12 @@ namespace SeekerItems
             UpdateVisuals();
             ToggleThorns();
         }
-        private void UpdateVisuals()
+        private void UpdateVisuals(float radiusForce = 0)
         {
             if (cachedOwnerInfo.gameObject) transform.position = (cachedOwnerInfo.characterBody ? cachedOwnerInfo.characterBody.corePosition : cachedOwnerInfo.transform.position);
             float scale = Mathf.SmoothDamp(transform.localScale.x, auraRadius, ref scaleVelocity, 0.5f);
+            if (radiusForce != 0) scale = Mathf.SmoothDamp(transform.localScale.x, radiusForce, ref scaleVelocity, 0.5f);
             transform.localScale = new Vector3(scale, scale, scale);
-            Log.Debug(auraRadius);
         }
         private void ToggleThorns()
         {
@@ -166,6 +172,7 @@ namespace SeekerItems
             {
                 foreach (ParticleSystem particleSystem in auraParticles)
                 {
+                    if (particleSystem == null) continue;
                     var particleMain = particleSystem.main;
                     particleMain.loop = true;
                     if (!particleSystem.isPlaying) particleSystem.Play();
@@ -175,32 +182,22 @@ namespace SeekerItems
             {
                 foreach (ParticleSystem particleSystem in auraParticles)
                 {
+                    if (particleSystem == null) continue;
                     var particleMain = particleSystem.main;
                     particleMain.loop = false;
                 }
             }
         }
 
-        private int countHit;
+        [SyncVar]
         private float auraRadius;
+        [SyncVar]
+        private int countHit;
 
         private static readonly float durationRefresh = NoxiousThorn.Refresh.Value;
         private static readonly float damageFrequency = NoxiousThorn.Damage_Frequency.Value;
         private float duration;
         private float frequency;
-
-        /*
-        //public BuffWard buffWard;
-        private float actualRadius;
-        private float scaleVelocity;
-        //private new Transform transform;
-        public int currentThornCount;
-
-        private static float setDuration = 6f;
-        private float timerDeplete;
-        private static float dotDuration = 1f;
-        private float dotDeplete;
-        */
 
         [SyncVar]
         public GameObject owner;

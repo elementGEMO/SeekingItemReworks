@@ -1,8 +1,8 @@
 {
     "name": "SeekingItemReworks",
-    "version_number": "1.4.0",
+    "version_number": "1.4.1",
     "website_url": "https://github.com/elementGEMO/SeekingItemReworks",
-    "description": "Reworks Seekers of the Storm items & more! Extremely configurable! Noxious Thorn Rework (Not tested for multiplayer). [11/18] + [2]",
+    "description": "Reworks Seekers of the Storm items & more! Extremely configurable! Noxious Thorn hotfix (VFX in Multiplayer now!). [11/18] + [2]",
     "dependencies": [
         "RiskofThunder-R2API_Core-5.1.1",
         "RiskofThunder-R2API_ContentManagement-1.0.6",
