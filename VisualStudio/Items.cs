@@ -1,15 +1,18 @@
 ﻿using R2API;
+using System;
 
 namespace SeekerItems
 {
-    public class ItemInfo
+    public static class ItemInfo
     {
-        public ItemInfo()
+        public static void SetUp()
         {
             // -- Seekers of the Storm Content -- \\
 
             // Common Tier Items
             if (WarpedEcho.Rework.Value == 1) { SetDesc(new WarpedEcho(WarpedEcho.Rework.Value)); }
+            if (ChronicExpansion.Rework.Value == 1) { SetDesc(new ChronicExpansion(ChronicExpansion.Rework.Value)); }
+            /*
             if (ChronicExpansion.Rework.Value == 1) { SetDesc(new ChronicExpansion(ChronicExpansion.Rework.Value)); }
             if (KnockbackFin.Rework.Value == 1 && MainConfig.CursedRewrite.Value == false)
             { 
@@ -26,6 +29,11 @@ namespace SeekerItems
             if (AntlerShield.Rework.Value == 1) { SetDesc(new AntlerShield(AntlerShield.Rework.Value)); }
 
             // Uncommon Tier Items
+            if (ChanceDoll.Rework.Value == 1) { SetDesc(new ChanceDoll(ChanceDoll.Rework.Value)); }
+            if (ChanceDoll.Rework.Value == 2) { 
+                SetDesc(new ChanceDoll(ChanceDoll.Rework.Value));
+                SetName(new ChanceDoll(ChanceDoll.Rework.Value), "Karma Doll");
+            }
             if (SaleStar.Rework.Value == 1) { SetDesc(new SaleStar(SaleStar.Rework.Value)); }
             if (UnstableTransmitter.Rework.Value == 1) { SetDesc(new UnstableTransmitter(UnstableTransmitter.Rework.Value)); }
             if (NoxiousThorn.Rework.Value == 1) { SetDesc(new NoxiousThorn(NoxiousThorn.Rework.Value)); }
@@ -41,6 +49,7 @@ namespace SeekerItems
 
             // Uncommon Tier Items
             if (OldWarStealthKit.Rework.Value == 1) { SetDesc(new OldWarStealthKit(OldWarStealthKit.Rework.Value)); }
+            */
         }
         private static void SetDesc(ItemTemplate ItemInfo, string forcedPrefix = "ITEM_")
         {
@@ -60,5 +69,7 @@ namespace SeekerItems
         public string ItemInternal;
         public string ItemInfo;
         public string ItemDesc;
+
+        public static double RoundVal(float value) => Math.Round(value, roundVal);
     }
 }

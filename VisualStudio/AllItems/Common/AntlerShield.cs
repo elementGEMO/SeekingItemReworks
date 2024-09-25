@@ -14,7 +14,7 @@ namespace SeekerItems
             {
                 ItemInfo = "Gain armor from movement speed, and increase movement speed.";
                 ItemDesc = string.Format(
-                    "Increase " + "armor ".Style(Color.cIsHealing) + "by " + "{0}% ".Style(Color.cIsHealing) + "(+{1}% per stack) ".Style(Color.cStack) + "of " + "current movement speed".Style(Color.cIsUtility) + ". Increase " + "movement speed ".Style(Color.cIsUtility) + "by " + "{2}% ".Style(Color.cIsUtility) + "(+{3}% per stack)".Style(Color.cStack) + ".",
+                    "Increase " + "armor ".Style(FontColor.cIsHealing) + "by " + "{0}% ".Style(FontColor.cIsHealing) + "(+{1}% per stack) ".Style(FontColor.cStack) + "of " + "current movement speed".Style(FontColor.cIsUtility) + ". Increase " + "movement speed ".Style(FontColor.cIsUtility) + "by " + "{2}% ".Style(FontColor.cIsUtility) + "(+{3}% per stack)".Style(FontColor.cStack) + ".",
                     Math.Round(Armor_Percent_Base.Value, roundVal), Math.Round(Armor_Percent_Stack.Value, roundVal),
                     Math.Round(Movement_Base.Value, roundVal), Math.Round(Movement_Stack.Value, roundVal)
                 );

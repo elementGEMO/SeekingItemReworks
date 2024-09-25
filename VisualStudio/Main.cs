@@ -9,185 +9,47 @@ using UnityEngine.AddressableAssets;
 using System.Collections.Generic;
 using EntityStates;
 using UnityEngine.Networking;
+using SeekerItems;
+using BepInEx.Configuration;
 
 [assembly: HG.Reflection.SearchableAttribute.OptIn]
-
-namespace SeekerItems
+namespace SeekingItemReworks
 {
     [BepInDependency(ItemAPI.PluginGUID)]
     [BepInDependency(LanguageAPI.PluginGUID)]
     [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
-
     public class Main : BaseUnityPlugin
     {
         public const string PluginGUID = PluginAuthor + "." + PluginName;
         public const string PluginAuthor = "noodlegemo";
         public const string PluginName = "SeekingItemReworks";
-        public const string PluginVersion = "1.4.1";
-
+        public const string PluginVersion = "1.5.0";
         public void Awake()
         {
             //On.RoR2.Networking.NetworkManagerSystemSteam.OnClientConnect += (s, u, t) => { }; - Used for Solo Multiplayer testing
 
             Log.Init(Logger);
+            MainConfig.SetUp(this);
+            ItemInfo.SetUp();
 
-            MainConfig.SetUpConfigs(this);
-            new ItemInfo();
-
-            SetUpCommonItems();
-            SetUpUncommonItems();
-            SetUpLegendaryItems();
+            SetUpCommon();
+            //SetUpCommonItems();
+            //SetUpUncommonItems();
+            //SetUpLegendaryItems();
         }
 
-        private void SetUpCommonItems()
+        public void SetUpCommon()
         {
             // -- Seekers of the Storm Content -- \\
+            WarpedEchoBehavior.Init();
+            ChronicExpansionBehavior.Init();
+        }
+    }
+}
 
-            // Warped Echo #1
-            if (WarpedEcho.Rework.Value == 1)
-            {
-                // Delay timer
-                IL.RoR2.CharacterBody.SecondHalfOfDelayedDamage += il =>
-                {
-                    var cursor = new ILCursor(il);
-                    var damageIndex = -1;
+/*
 
-                    if (cursor.TryGotoNext(
-                            x => x.MatchLdloc(out damageIndex),
-                            x => x.MatchLdarg(1),
-                            x => x.MatchStfld(typeof(CharacterBody.DelayedDamageInfo), nameof(CharacterBody.DelayedDamageInfo.halfDamage))
-                        ))
-                    {
-                        cursor.Emit(OpCodes.Ldarg_0);
-                        cursor.Emit(OpCodes.Ldloc, damageIndex);
-                        cursor.EmitDelegate<Action<CharacterBody, CharacterBody.DelayedDamageInfo>>((body, damageInfo) =>
-                        {
-                            damageInfo.timeUntilDamage = WarpedEcho.Delay_Base.Value;
-                        });
-                    }
-                    else
-                    {
-                        Logger.LogWarning(WarpedEcho.StaticName + " #1 - IL Fail #1");
-                    }
-                };
-
-                // Refresh immediately
-                IL.RoR2.CharacterBody.UpdateSecondHalfOfDamage += il =>
-                {
-                    var cursor = new ILCursor(il);
-
-                    if (cursor.TryGotoNext(
-                        x => x.MatchCall<CharacterBody>(nameof(CharacterBody.RemoveBuff))
-                    ))
-                    {
-                        cursor.Index++;
-                        cursor.Emit(OpCodes.Ldarg_0);
-                        cursor.EmitDelegate<Action<CharacterBody>>(body =>
-                        {
-                            body.AddBuff(DLC2Content.Buffs.DelayedDamageBuff);
-                        });
-                    }
-                    else
-                    {
-                        Logger.LogWarning(WarpedEcho.StaticName + " #1 - IL Fail #2");
-                    }
-                };
-
-                // New logic behind losing and gaining Warped Echos.
-                On.RoR2.CharacterBody.UpdateDelayedDamage += (orig, self, deltaTime) =>
-                {
-                    if (!NetworkServer.active) return;
-
-                    int itemCount = self.inventory ? self.inventory.GetItemCount(DLC2Content.Items.DelayedDamage) : 0;
-                    if (itemCount > 0)
-                    {
-                        itemCount = 1 + WarpedEcho.Instance_Stack.Value * (itemCount - 1);
-                        int buffCount = self.GetBuffCount(DLC2Content.Buffs.DelayedDamageBuff);
-                        if (self.oldDelayedDamageCount != itemCount)
-                        {
-                            int newDiff = itemCount - self.oldDelayedDamageCount;
-                            if (newDiff > 0)
-                            {
-                                for (int i = 0; i < Math.Abs(newDiff); i++)
-                                {
-                                    self.AddBuff(DLC2Content.Buffs.DelayedDamageBuff);
-                                }
-                            }
-                            else
-                            {
-                                for (int i = 0; i < Math.Abs(newDiff); i++)
-                                {
-                                    self.RemoveBuff(DLC2Content.Buffs.DelayedDamageBuff);
-                                }
-                            }
-                        }
-                        self.oldDelayedDamageCount = itemCount;
-                    }
-                    else
-                    {
-                        self.oldDelayedDamageCount = 0;
-                        self.RemoveBuff(DLC2Content.Buffs.DelayedDamageBuff);
-                        self.RemoveBuff(DLC2Content.Buffs.DelayedDamageDebuff);
-                        self.RemoveOldestTimedBuff(DLC2Content.Buffs.DelayedDamageDebuff);
-                    }
-                };
-            }
-
-            // Chronic Expansion #1
-            if (ChronicExpansion.Rework.Value == 1)
-            {
-                IL.RoR2.CharacterBody.RecalculateStats += il =>
-                {
-                    var cursor = new ILCursor(il);
-                    var itemIndex = -1;
-
-                    if (cursor.TryGotoNext(
-                        x => x.MatchLdsfld(typeof(DLC2Content.Items), nameof(DLC2Content.Items.IncreaseDamageOnMultiKill)),
-                        x => x.MatchCallvirt<Inventory>(nameof(Inventory.GetItemCount)),
-                        x => x.MatchStloc(out itemIndex)
-                    )) { }
-                    else
-                    {
-                        Logger.LogWarning(ChronicExpansion.StaticName + " - IL Fail #1");
-                    }
-
-                    if (cursor.TryGotoNext(
-                        x => x.MatchLdarg(0),
-                        x => x.MatchLdsfld(typeof(DLC2Content.Buffs), nameof(DLC2Content.Buffs.IncreaseDamageBuff)),
-                        x => x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.GetBuffCount))
-                    ))
-                    {
-                        cursor.Emit(OpCodes.Ldarg_0);
-                        cursor.Emit(OpCodes.Ldloc, itemIndex);
-                        cursor.EmitDelegate<Action<CharacterBody, int>>((body, itemCount) =>
-                        {
-                            int buffCount = body.GetBuffCount(DLC2Content.Buffs.IncreaseDamageBuff);
-                            float damageMod = buffCount * (ChronicExpansion.Damage_Base.Value + ChronicExpansion.Damage_Stack.Value * (itemCount - 1)) / 100f;
-                            body.damage *= 1 + damageMod;
-
-                            if (body.oldComboMeter < buffCount)
-                            {
-                                body.oldComboMeter = buffCount;
-                            }
-                        });
-                        var skipLabel = cursor.DefineLabel();
-                        cursor.Emit(OpCodes.Br_S, skipLabel);
-
-                        if (cursor.TryGotoNext(
-                            x => x.MatchLdarg(0),
-                            x => x.MatchLdloc(out _),
-                            x => x.MatchStfld<CharacterBody>(nameof(CharacterBody.oldComboMeter))
-                        ))
-                        {
-                            cursor.MarkLabel(skipLabel);
-                        }
-                    }
-                    else
-                    {
-                        Logger.LogWarning(ChronicExpansion.StaticName + " #1 - IL Fail #2");
-                    }
-                };
-            }
+            // -- Seekers of the Storm Content -- \\
 
             // Knockback Fin #1
             if (KnockbackFin.Rework.Value == 1)
@@ -441,7 +303,7 @@ namespace SeekerItems
                     if (damageInfo.attacker && damageInfo.procCoefficient > 0f)
                     {
                         CharacterBody allyBody = damageInfo.attacker.GetComponent<CharacterBody>();
-                        int countBuffs = allyBody.GetBuffCount(LanternCountBuff.LanternCounter);
+                        int countBuffs = allyBody ? allyBody.GetBuffCount(LanternCountBuff.LanternCounter) : 0;
 
                         if (allyBody && countBuffs > 0 && Util.CheckRoll(BolsteringLantern.Chance_Base.Value + BolsteringLantern.Chance_Stack.Value * (countBuffs - 1), 0f, null))
                         {
@@ -518,6 +380,399 @@ namespace SeekerItems
         {
             // -- Seekers of the Storm Content -- \\
 
+            // Chance Doll #1
+            /*
+            if (true)
+            {
+                PickupDropTable upgradeTable = new();
+                upgradeTable.Add(new List<PickupIndex>
+                {
+
+                });
+            }*/
+
+// Chance Doll #0
+/*
+if (ChanceDoll.Rework.Value > 0)
+{
+    IL.RoR2.ShrineChanceBehavior.AddShrineStack += il =>
+    {
+        var cursor = new ILCursor(il);
+
+        if (cursor.TryGotoNext(
+            x => x.MatchRet(),
+            x => x.MatchLdarg(0),
+            x => x.MatchLdfld<ShrineChanceBehavior>(nameof(ShrineChanceBehavior.dropTable)),
+            x => x.MatchCallOrCallvirt(typeof(UnityEngine.Object), "op_Implicit"),
+            x => x.MatchBrfalse(out _)
+        ))
+        {
+            Logger.LogDebug(cursor.Index);
+            var skipLabel = cursor.DefineLabel();
+            cursor.Emit(OpCodes.Br, skipLabel);
+
+            if (cursor.TryGotoNext(
+                x => x.MatchStloc(out _),
+                x => x.MatchLdloc(out _),
+                x => x.MatchLdsfld<PickupIndex>(nameof(PickupIndex.none)),
+                x => x.MatchCallOrCallvirt<PickupIndex>("op_Equality")
+            ))
+            {
+                //cursor.Index--;
+                Logger.LogDebug(cursor.Index);
+                cursor.MarkLabel(skipLabel);
+            }
+        }
+        else
+        {
+            Logger.LogWarning(ChanceDoll.StaticName + " #0 - IL Fail #1");
+        }
+    };
+}
+if (ChanceDoll.Rework.Value == 1)
+{
+    IL.RoR2.ShrineChanceBehavior.AddShrineStack += il =>
+    {
+        var cursor = new ILCursor(il);
+        var pickupIndex = -1;
+
+        if (cursor.TryGotoNext(
+            x => x.MatchStloc(out pickupIndex)
+        )) { }
+        else
+        {
+            Logger.LogWarning(ChanceDoll.StaticName + " #1 - IL Fail #1");
+        }
+
+        //Logger.LogDebug("Index: " + pickupIndex);
+
+        if (cursor.TryGotoNext(
+            x => x.MatchLdloc(out _),
+            x => x.MatchLdsfld<PickupIndex>(nameof(PickupIndex.none)),
+            x => x.MatchCallOrCallvirt<PickupIndex>("op_Equality")
+        ))
+        {
+            //Logger.LogDebug("1");
+            cursor.Emit(OpCodes.Ldarg_0);
+            //Logger.LogDebug("2");
+            cursor.Emit(OpCodes.Ldloc, pickupIndex);
+            //Logger.LogDebug("3");
+
+            cursor.EmitDelegate<Func<ShrineChanceBehavior, PickupIndex, PickupIndex>>((self, pickupInd) =>
+            {
+                PickupIndex emptyTier = PickupIndex.none;
+                PickupIndex commonTier = self.rng.NextElementUniform<PickupIndex>(Run.instance.availableTier1DropList);
+                PickupIndex uncommonTier = self.rng.NextElementUniform<PickupIndex>(Run.instance.availableTier2DropList);
+                PickupIndex legendaryTier = self.rng.NextElementUniform<PickupIndex>(Run.instance.availableTier3DropList);
+                PickupIndex equipTier = self.rng.NextElementUniform<PickupIndex>(Run.instance.availableEquipmentDropList);
+                WeightedSelection<PickupIndex> weightedSelection = new WeightedSelection<PickupIndex>(8);
+                weightedSelection.AddChoice(emptyTier, self.failureWeight);
+                weightedSelection.AddChoice(commonTier, self.tier1Weight);
+                weightedSelection.AddChoice(uncommonTier, self.tier2Weight);
+                weightedSelection.AddChoice(legendaryTier, self.tier3Weight);
+                weightedSelection.AddChoice(equipTier, self.equipmentWeight);
+
+                self.chanceDollWin = false;
+                Logger.LogDebug("Apparently override");
+
+                return weightedSelection.Evaluate(self.rng.nextNormalizedFloat);
+            });
+            //Logger.LogDebug("4");
+            cursor.Emit(OpCodes.Stloc, pickupIndex);
+            //Logger.LogDebug("5");
+        }
+        else
+        {
+            Logger.LogWarning(ChanceDoll.StaticName + " #1 - IL Fail #1");
+        }
+    };
+}
+*/
+
+/*
+/*
+if (ChanceDoll.Rework.Value > 0)
+{
+    // Invalidate Base Effect
+    IL.RoR2.ShrineChanceBehavior.AddShrineStack += il =>
+    {
+        var cursor = new ILCursor(il);
+
+        if (cursor.TryGotoNext(
+            x => x.MatchLdcI4(out _),
+            x => x.MatchBle(out _),
+            x => x.MatchLdloc(out _),
+            x => x.MatchLdsfld(typeof(DLC2Content.Items), nameof(DLC2Content.Items.ExtraShrineItem))
+        ))
+        {
+            cursor.EmitDelegate<Func<int, int>>(self => int.MaxValue);
+        }
+        else
+        {
+            Logger.LogWarning(ChanceDoll.StaticName + " #0 - IL Fail #1");
+        }
+    };
+}
+if (ChanceDoll.Rework.Value == 1)
+{
+    IL.RoR2.ShrineChanceBehavior.AddShrineStack += il =>
+    {
+        var cursor = new ILCursor(il);
+        var pickupIndex = -1;
+
+        if (cursor.TryGotoNext(
+            x => x.MatchStloc(out pickupIndex)
+        )) { }
+        else
+        {
+            Logger.LogWarning(ChanceDoll.StaticName + " #1 - IL Fail #1");
+        }
+
+        if (cursor.TryGotoNext(
+            x => x.MatchBr(out _),
+            x => x.MatchLdarg(0),
+            x => x.MatchLdcI4(out _),
+            x => x.MatchStfld<ShrineChanceBehavior>(nameof(ShrineChanceBehavior.chanceDollWin))
+        ))
+        {
+            cursor.Emit(OpCodes.Ldarg_0);
+            cursor.EmitDelegate<Action<ShrineChanceBehavior>>(self =>
+            {
+                Logger.LogDebug("Activated");
+            });
+        }
+    };
+}
+*/
+/*
+if (ChanceDoll.Rework.Value == 1)
+            {
+                // Add a new lang token, for English
+                LanguageAPI.Add("SHRINE_CHANCE_DOLL_2P", "<style=cShrine>Your Chance Doll upgrades the shrine, granting a reward!</color>");
+                LanguageAPI.Add("SHRINE_CHANCE_DOLL", "<style=cShrine>{0}'s Chance Doll upgrades the shrine, granting a reward!</color>");
+
+                // Add Chance Shrine component
+                ChanceDollSetup.Awake();
+
+                // Replace Shrine functionality
+                On.RoR2.ShrineChanceBehavior.AddShrineStack += (orig, self, activator) =>
+                {
+                    if (!NetworkServer.active) return;
+                    if (!activator.GetComponent<HealthComponent>()) return;
+
+                    CharacterBody characterBody = activator.GetComponent<CharacterBody>();
+                    PickupIndex itemIndex = PickupIndex.none;
+
+                    if (!characterBody.inventory) return;
+
+                    self.chanceDollWin = false;
+
+                    if (self.dropTable)
+                    {
+                        ChanceDollBehavior counter = self.gameObject.GetComponent<ChanceDollBehavior>();
+                        int itemCount = characterBody.inventory.GetItemCount(DLC2Content.Items.ExtraShrineItem);
+
+                        if (self.rng.nextNormalizedFloat > self.failureChance)
+                        {
+                            itemIndex = self.dropTable.GenerateDrop(self.rng);
+                            float rollChance = (itemCount > 0) ? (ChanceDoll.Chance_Base.Value + ChanceDoll.Chance_Stack.Value * (itemCount - 1)) * counter.FailCount : 0;
+
+                            if (Util.CheckRoll(Math.Max(rollChance, ChanceDoll.Hidden_Chance.Value), characterBody.master))
+                            {
+                                ItemTier minimumTier;
+                                ItemTier foundTier = itemIndex.pickupDef.itemTier;
+                                int tierExtraChance = (Util.CheckRoll(rollChance % 100)) ? 1 : 0;
+                                double tierAmounts = Math.Round(rollChance / 100);
+
+                                if (tierAmounts > 1 || tierAmounts + tierExtraChance > 1) minimumTier = ItemTier.Tier3;
+                                else if (tierAmounts <= 1) minimumTier = ItemTier.Tier2;
+                                else minimumTier = ItemTier.Tier1;
+
+                                List<PickupIndex> commonList = new(Run.instance.availableTier1DropList);
+                                List<PickupIndex> uncommonList = new(Run.instance.availableTier2DropList);
+                                List<PickupIndex> legendaryList = new(Run.instance.availableTier3DropList);
+                                List<PickupIndex> selectList;
+
+                                if (minimumTier == ItemTier.Tier1) selectList = commonList;
+                                if (minimumTier == ItemTier.Tier2) selectList = uncommonList;
+                                else selectList = legendaryList;
+
+                                Util.ShuffleList<PickupIndex>(selectList);
+                                itemIndex = selectList[0];
+
+                                self.chanceDollWin = true;
+                            }
+                        }
+                        else
+                        {
+                            counter.FailCount++;
+
+                            if (itemCount > 0)
+                            {
+                                EffectManager.SpawnEffect(self.effectPrefabShrineRewardNormal, new EffectData
+                                {
+                                    origin = self.gameObject.transform.position,
+                                    rotation = Quaternion.identity,
+                                    scale = 3f,
+                                    color = self.colorShrineRewardJackpot
+                                }, true);
+                            }
+                        }
+                    }
+
+                    string baseToken;
+                    if (itemIndex == PickupIndex.none) baseToken = "SHRINE_CHANCE_FAIL_MESSAGE";
+                    else
+                    {
+                        if (self.chanceDollWin) baseToken = "SHRINE_CHANCE_DOLL";
+                        else baseToken = "SHRINE_CHANCE_SUCCESS_MESSAGE";
+                        self.successfulPurchaseCount++;
+                        PickupDropletController.CreatePickupDroplet(itemIndex, self.dropletOrigin.position, self.dropletOrigin.forward * 20f);
+                    }
+                    Chat.SendBroadcastChat(new Chat.SubjectFormatChatMessage
+                    {
+                        subjectAsCharacterBody = characterBody,
+                        baseToken = baseToken
+                    });
+                    self.waitingForRefresh = true;
+                    self.refreshTimer = 2f;
+                    if (self.chanceDollWin)
+                    {
+                        EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/ExtraStatsOnLevelUpEffect"), new EffectData
+                        {
+                            origin = self.gameObject.transform.position,
+                            rotation = Quaternion.identity,
+                            scale = 3f,
+                            color = self.colorShrineRewardJackpot
+                        }, true);
+                    }
+                    else
+                    {
+                        EffectManager.SpawnEffect(self.effectPrefabShrineRewardNormal, new EffectData
+                        {
+                            origin = self.gameObject.transform.position,
+                            rotation = Quaternion.identity,
+                            scale = 1.5f,
+                            color = self.colorShrineRewardNormal
+                        }, true);
+                    }
+                    if (self.successfulPurchaseCount >= self.maxPurchaseCount)
+                    {
+                        self.symbolTransform.gameObject.SetActive(false);
+                        self.CallRpcSetPingable(false);
+                    }
+                };
+            }
+            if (ChanceDoll.Rework.Value == 2)
+            {
+                // Remove Chance Doll's effect
+                On.RoR2.ShrineChanceBehavior.AddShrineStack += (orig, self, activator) =>
+                {
+                    if (!NetworkServer.active) return;
+                    if (!activator.GetComponent<HealthComponent>()) return;
+
+                    CharacterBody characterBody = activator.GetComponent<CharacterBody>();
+                    PickupIndex itemIndex = PickupIndex.none;
+                    string baseToken;
+
+                    if (!characterBody.inventory) return;
+                    if (self.dropTable && self.rng.nextNormalizedFloat > self.failureChance) itemIndex = self.dropTable.GenerateDrop(self.rng);
+
+                    if (itemIndex == PickupIndex.none) baseToken = "SHRINE_CHANCE_FAIL_MESSAGE";
+                    else
+                    {
+                        baseToken = "SHRINE_CHANCE_SUCCESS_MESSAGE";
+                        self.successfulPurchaseCount++;
+                        PickupDropletController.CreatePickupDroplet(itemIndex, self.dropletOrigin.position, self.dropletOrigin.forward * 20f);
+                    }
+
+                    Chat.SendBroadcastChat(new Chat.SubjectFormatChatMessage
+                    {
+                        subjectAsCharacterBody = characterBody,
+                        baseToken = baseToken
+                    });
+
+                    self.waitingForRefresh = true;
+                    self.refreshTimer = 2f;
+
+                    EffectManager.SpawnEffect(self.effectPrefabShrineRewardNormal, new EffectData
+                    {
+                        origin = self.gameObject.transform.position,
+                        rotation = Quaternion.identity,
+                        scale = 1.5f,
+                        color = self.colorShrineRewardNormal
+                    }, true);
+
+                    if (self.successfulPurchaseCount >= self.maxPurchaseCount)
+                    {
+                        self.symbolTransform.gameObject.SetActive(false);
+                        self.CallRpcSetPingable(false);
+                    }
+                };
+
+                // Add on interact function
+                On.RoR2.GlobalEventManager.OnInteractionBegin += (orig, self, interactor, interactable, interactableObject) =>
+                {
+                    orig(self, interactor, interactable, interactableObject);
+
+                    PurchaseInteraction interactType = interactableObject ? interactableObject.GetComponent<PurchaseInteraction>() : null;
+                    if (interactable != null && interactType)
+                    {
+                        CharacterBody characterBody = interactor.GetComponent<CharacterBody>();
+                        int itemCount = characterBody.inventory ? characterBody.inventory.GetItemCount(DLC2Content.Items.ExtraShrineItem) : 0;
+
+                        if (characterBody && itemCount > 0 && interactType.isShrine)
+                        {
+                            PlayerCharacterMasterController masterController = characterBody.master.playerCharacterMasterController;
+                            KarmaDollBehavior karmaDollBehavior = masterController.gameObject.GetComponent<KarmaDollBehavior>();
+                            if (!karmaDollBehavior)
+                            {
+                                karmaDollBehavior = masterController.gameObject.AddComponent<KarmaDollBehavior>();
+                                karmaDollBehavior.Awake();
+                                karmaDollBehavior.owner = characterBody;
+                            }
+
+                            karmaDollBehavior.IncreaseKarma(itemCount, characterBody, interactableObject);
+                            Debug.Log("SeekingItemReworks: Activated a shrine");
+                        }
+                    }
+                };
+
+                // Add luck
+                IL.RoR2.CharacterBody.RecalculateStats += il =>
+                {
+                    var cursor = new ILCursor(il);
+
+                    if (cursor.TryGotoNext(
+                        x => x.MatchLdloc(out _),
+                        x => x.MatchLdloc(out _),
+                        x => x.MatchConvR4(),
+                        x => x.MatchLdcR4(out _),
+                        x => x.MatchMul(),
+                        x => x.MatchLdarg(0),
+                        x => x.MatchCallOrCallvirt<CharacterBody>("get_maxHealth")
+                    ))
+                    {
+                        cursor.Emit(OpCodes.Ldarg, 0);
+                        cursor.EmitDelegate<Action<CharacterBody>>(self =>
+                        {
+                            Logger.LogDebug("Is updating stats...");
+                            int itemCount = self.inventory ? self.inventory.GetItemCount(DLC2Content.Items.ExtraShrineItem) : 0;
+                            KarmaDollBehavior karmaDollBehavior = self.master.playerCharacterMasterController.gameObject.GetComponent<KarmaDollBehavior>();
+                            if (itemCount > 0 && karmaDollBehavior)
+                            {
+                                self.master.luck += karmaDollBehavior.karmaLuck;
+                                Logger.LogDebug("Is updating luck...");
+                            }
+                        });
+                    }
+                    else
+                    {
+                        Logger.LogWarning(ChanceDoll.StaticName + " #2 - IL Fail #1");
+                    }
+                };
+            }
+
             // Sale Star #1
             if (SaleStar.Rework.Value == 1)
             {
@@ -525,6 +780,7 @@ namespace SeekerItems
                 IL.RoR2.PurchaseInteraction.OnInteractionBegin += il =>
                 {
                     var cursor = new ILCursor(il);
+
                     if (cursor.TryGotoNext(
                         x => x.MatchLdsfld(typeof(DLC2Content.Items), nameof(DLC2Content.Items.LowerPricedChests)),
                         x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCount)),
@@ -661,12 +917,6 @@ namespace SeekerItems
                 {
                     var cursor = new ILCursor(il);
                     if (cursor.TryGotoNext(
-                        /*
-                        x => x.MatchLdsfld(typeof(DLC2Content.Items), nameof(DLC2Content.Items.LowerPricedChests)),
-                        x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCount)),
-                        x => x.MatchLdcI4(out _)
-                        */
-                        //x => x.MatchLdcI4(out _),
                         x => x.MatchBle(out _),
                         x => x.MatchLdcR4(out _),
                         x => x.MatchLdcR4(out _),
@@ -903,3 +1153,4 @@ namespace SeekerItems
         }
     }
 }
+*/

@@ -10,15 +10,15 @@ namespace SeekerItems
         {
             ItemInternal = "TRIGGERENEMYDEBUFFS";
 
-            string sequenceDoT = "bleed ".Style(Color.cIsDamage) + "enemies ";
-            if (Inflict_Type.Value == 1) sequenceDoT = "apply " + "poison ".Style(Color.cIsDamage);
-            if (Inflict_Type.Value == 2) sequenceDoT = "apply " + "blight ".Style(Color.cIsDamage);
+            string sequenceDoT = "bleed ".Style(FontColor.cIsDamage) + "enemies ";
+            if (Inflict_Type.Value == 1) sequenceDoT = "apply " + "poison ".Style(FontColor.cIsDamage);
+            if (Inflict_Type.Value == 2) sequenceDoT = "apply " + "blight ".Style(FontColor.cIsDamage);
 
             if (descType == 1)
             {
                 ItemInfo = "Taking damage surrounds yourself in a ring of thorns.";
                 ItemDesc = string.Format(
-                    "Getting hit surrounds you in a " + "ring of thorns ".Style(Color.cIsDamage) + "that {0}" + "for " + "{1}% ".Style(Color.cIsDamage) + "(+{2}% per stack) ".Style(Color.cStack) + "damage. The ring " + "grows when taking damage".Style(Color.cIsDamage) + ", increasing its radius by " + "{3}m".Style(Color.cIsDamage) + ". Stacks up to " + "{4}m ".Style(Color.cIsDamage) + "(+{5}m per stack)".Style(Color.cStack) + ".",
+                    "Getting hit surrounds you in a " + "ring of thorns ".Style(FontColor.cIsDamage) + "that {0}" + "for " + "{1}% ".Style(FontColor.cIsDamage) + "(+{2}% per stack) ".Style(FontColor.cStack) + "damage. The ring " + "grows when taking damage".Style(FontColor.cIsDamage) + ", increasing its radius by " + "{3}m".Style(FontColor.cIsDamage) + ". Stacks up to " + "{4}m ".Style(FontColor.cIsDamage) + "(+{5}m per stack)".Style(FontColor.cStack) + ".",
                     sequenceDoT,
                     Math.Round(Damage_Base.Value, roundVal), Math.Round(Damage_Stack.Value, roundVal),
                     Math.Round(Range_Increment.Value, roundVal), Math.Round(Base_Cap.Value, roundVal),

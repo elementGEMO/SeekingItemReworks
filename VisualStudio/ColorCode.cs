@@ -2,7 +2,7 @@
 {
     public static class ColorCode
     {
-        public enum Color
+        public enum FontColor
         {
             cStack,
             cIsDamage,
@@ -11,7 +11,7 @@
             cIsHealing
         };
 
-        public static string Style(this string self, Color style)
+        public static string Style(this string self, FontColor style)
         {
             return "<style=" + style + ">" + self + "</style>";
         }

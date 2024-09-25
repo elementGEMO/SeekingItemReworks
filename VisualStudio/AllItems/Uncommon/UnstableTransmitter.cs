@@ -14,7 +14,7 @@ namespace SeekerItems
             {
                 ItemInfo = "Become intangible and explode, bleeding nearby enemies at low health.";
                 ItemDesc = string.Format(
-                    "Falling below " + "{0}% health ".Style(Color.cIsHealth) + "causes you to fade away, becoming " + "intangible ".Style(Color.cIsUtility) + "and exploding, " + "bleeding ".Style(Color.cIsDamage) + "enemies within " + "{1}m ".Style(Color.cIsDamage) + "for " + "{2}% ".Style(Color.cIsDamage) + "(+{3}% per stack) ".Style(Color.cStack) + "base damage. Lasts " + "{4}s ".Style(Color.cIsUtility) + "(+{5}s per stack)".Style(Color.cStack) + ". Recharges every " + "{6} ".Style(Color.cIsUtility) + "seconds.",
+                    "Falling below " + "{0}% health ".Style(FontColor.cIsHealth) + "causes you to fade away, becoming " + "intangible ".Style(FontColor.cIsUtility) + "and exploding, " + "bleeding ".Style(FontColor.cIsDamage) + "enemies within " + "{1}m ".Style(FontColor.cIsDamage) + "for " + "{2}% ".Style(FontColor.cIsDamage) + "(+{3}% per stack) ".Style(FontColor.cStack) + "base damage. Lasts " + "{4}s ".Style(FontColor.cIsUtility) + "(+{5}s per stack)".Style(FontColor.cStack) + ". Recharges every " + "{6} ".Style(FontColor.cIsUtility) + "seconds.",
                     LowHealth.Value, Math.Round(Range.Value, roundVal),
                     Math.Round(Damage_Base.Value, roundVal), Math.Round(Damage_Stack.Value, roundVal),
                     Math.Round(Duration_Base.Value, roundVal), Math.Round(Duration_Stack.Value, roundVal),

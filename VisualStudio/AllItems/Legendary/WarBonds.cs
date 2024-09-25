@@ -17,7 +17,7 @@ namespace SeekerItems
                     Math.Round(Experience_Percent_Base.Value, roundVal)
                 );
                 ItemDesc = string.Format(
-                    "Gain " + "{0} ".Style(Color.cIsUtility) + "(+{1} per stack) ".Style(Color.cStack) + "free purchases ".Style(Color.cIsUtility) + "at the " + "start of each stage".Style(Color.cIsUtility) + ". When making a gold purchase, get " + "{2}% ".Style(Color.cIsUtility) + "(+{3}% per stack) ".Style(Color.cStack) + "of spent gold as " + "experience".Style(Color.cIsUtility) + ".",
+                    "Gain " + "{0} ".Style(FontColor.cIsUtility) + "(+{1} per stack) ".Style(FontColor.cStack) + "free purchases ".Style(FontColor.cIsUtility) + "at the " + "start of each stage".Style(FontColor.cIsUtility) + ". When making a gold purchase, get " + "{2}% ".Style(FontColor.cIsUtility) + "(+{3}% per stack) ".Style(FontColor.cStack) + "of spent gold as " + "experience".Style(FontColor.cIsUtility) + ".",
                     Purchase_Base.Value, Purchase_Stack.Value, Math.Round(Experience_Percent_Base.Value, roundVal), Math.Round(Experience_Percent_Stack.Value, roundVal)
                 );
             }

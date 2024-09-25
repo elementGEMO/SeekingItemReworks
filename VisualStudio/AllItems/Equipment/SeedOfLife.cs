@@ -13,7 +13,7 @@ namespace SeekerItems
             if (descType == 1)
             {
                 ItemInfo = "Revives user or allies. Consume on use.";
-                ItemDesc = "Returns ".Style(Color.cIsHealing) + "the user " + "to life ".Style(Color.cIsHealing) + "upon death ".Style(Color.cIsUtility) + "or dead allies on use. Equipment is " + "consumed ".Style(Color.cIsUtility) + "on use.";
+                ItemDesc = "Returns ".Style(FontColor.cIsHealing) + "the user " + "to life ".Style(FontColor.cIsHealing) + "upon death ".Style(FontColor.cIsUtility) + "or dead allies on use. Equipment is " + "consumed ".Style(FontColor.cIsUtility) + "on use.";
             }
         }
 

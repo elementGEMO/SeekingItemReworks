@@ -8,14 +8,12 @@ namespace SeekerItems
         private static readonly string RoR2 = "RoR2 ";
         private static readonly string DLC1 = "SotV ";
         private static readonly string DLC2 = "SotS ";
-        public static void SetUpConfigs(BaseUnityPlugin plugin)
+        public static void SetUp(BaseUnityPlugin plugin)
         {
             GeneralConfig(plugin);
-
             CommonConfig(plugin);
             UncommonConfig(plugin);
             LegendaryConfig(plugin);
-
             EquipmentConfig(plugin);
         }
 
@@ -68,6 +66,11 @@ namespace SeekerItems
                     "[ 0 = Vanilla | 1 = Rework #1 ]",
                     new AcceptableValueRange<int>(0, 1)
                 )
+            );
+            ChronicExpansion.TallyKills = plugin.Config.Bind(
+                DLC2 + ChronicExpansion.StaticName,
+                "Toggle Tally Display", true,
+                "[ True = Display Counts on Kill Streak, not Buffs | False = Vanilla ]"
             );
             ChronicExpansion.Damage_Base = plugin.Config.Bind(
                 DLC2 + ChronicExpansion.StaticName,
@@ -195,6 +198,31 @@ namespace SeekerItems
         public static void UncommonConfig(BaseUnityPlugin plugin)
         {
             // -- Seekers of the Storm Content -- \\
+
+            // Chance Doll
+            ChanceDoll.Rework = plugin.Config.Bind(
+                DLC2 + ChanceDoll.StaticName,
+                "Toggle Rework", 1,
+                new ConfigDescription(
+                    "[ 0 = Vanilla | 1 = Rework #1 | 2 = Rework #2 ]",
+                    new AcceptableValueRange<int>(0, 2)
+                )
+            );
+            ChanceDoll.Hidden_Chance = plugin.Config.Bind(
+                DLC2 + ChanceDoll.StaticName,
+                "! Rework #1 - Hidden Chance !", 10f,
+                "[ 10.0 = 10% Chance ]\nChance for upgrade without failures"
+            );
+            ChanceDoll.Chance_Base = plugin.Config.Bind(
+                DLC2 + ChanceDoll.StaticName,
+                "! Rework #1 - Base Chance !", 20f,
+                "[ 20.0 = 20% Chance ]\nChance for upgrade per shrine failure"
+            );
+            ChanceDoll.Chance_Stack = plugin.Config.Bind(
+                DLC2 + ChanceDoll.StaticName,
+                "! Rework #1 - Stack Chance !", 5f,
+                "[ 5.0 = +5% Chance ]\nMore chance for upgrade per shrine failure, per stack"
+            );
 
             // Sale Star
             SaleStar.Rework = plugin.Config.Bind(

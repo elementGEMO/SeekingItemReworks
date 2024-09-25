@@ -17,7 +17,7 @@ namespace SeekerItems
                     HighHealth.Value
                 );
                 ItemDesc = string.Format(
-                    "Falling below " + "{0}% health".Style(Color.cIsHealth) + " grants a buff that " + "ignites ".Style(Color.cIsDamage) + "enemies for " + "{1}% ".Style(Color.cIsDamage) + "(+{2}% per stack) ".Style(Color.cStack) + "base damage on hit, until " + "health ".Style(Color.cIsHealing) + "is restored to " + "{3}%".Style(Color.cIsHealing) + ".",
+                    "Falling below " + "{0}% health".Style(FontColor.cIsHealth) + " grants a buff that " + "ignites ".Style(FontColor.cIsDamage) + "enemies for " + "{1}% ".Style(FontColor.cIsDamage) + "(+{2}% per stack) ".Style(FontColor.cStack) + "base damage on hit, until " + "health ".Style(FontColor.cIsHealing) + "is restored to " + "{3}%".Style(FontColor.cIsHealing) + ".",
                     LowHealth.Value, Math.Round(Damage_Base.Value, roundVal),
                     Math.Round(Damage_Stack.Value, roundVal), HighHealth.Value
                 );
@@ -26,7 +26,7 @@ namespace SeekerItems
             {
                 ItemInfo = "Chance on hit to ignite. Inherited by allies.";
                 ItemDesc = string.Format(
-                    "{0}% ".Style(Color.cIsDamage) + "(+{1}% per stack) ".Style(Color.cStack) + "chance on hit to " + "ignite ".Style(Color.cIsDamage) + "enemies for " + "{2}% ".Style(Color.cIsDamage) + "(+{3}% per stack) ".Style(Color.cStack) + "base damage. This item is " + "inherited by allies ".Style(Color.cIsUtility) + "and is boosted with " + "Ignition Tank".Style(Color.cIsUtility) + ".",
+                    "{0}% ".Style(FontColor.cIsDamage) + "(+{1}% per stack) ".Style(FontColor.cStack) + "chance on hit to " + "ignite ".Style(FontColor.cIsDamage) + "enemies for " + "{2}% ".Style(FontColor.cIsDamage) + "(+{3}% per stack) ".Style(FontColor.cStack) + "base damage. This item is " + "inherited by allies ".Style(FontColor.cIsUtility) + "and is boosted with " + "Ignition Tank".Style(FontColor.cIsUtility) + ".",
                     Math.Round(Chance_Base.Value, roundVal), Math.Round(Chance_Stack.Value, roundVal),
                     Math.Round(Damage_Base.Value, roundVal), Math.Round(Damage_Stack.Value, roundVal)
                 );

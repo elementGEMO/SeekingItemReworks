@@ -36,7 +36,6 @@ namespace SeekerItems
                 ParticleSystemRenderer renderParticle = (particleSystem) ? particleSystem.GetComponent<ParticleSystemRenderer>() : null;
                 if (renderParticle)
                 {
-                    //ParticleSystemRenderer renderParticle = particleSystem.GetComponent<ParticleSystemRenderer>();
                     if (renderParticle.name == "Chunks") renderParticle.gameObject.SetActive(false);
                     if (renderParticle.sharedMaterial)
                     {
@@ -60,7 +59,7 @@ namespace SeekerItems
 
         private void OnEnable()
         {
-            On.RoR2.HealthComponent.TakeDamageProcess += increaseCount;
+            On.RoR2.HealthComponent.TakeDamageProcess += IncreaseCount;
             GameObject gameObject = Instantiate(auraEffect, transform.position, Quaternion.identity);
             gameObject.transform.SetParent(transform);
             clonedAura = gameObject.GetComponent<ThornAuraController>();
@@ -69,7 +68,7 @@ namespace SeekerItems
         }
         private void OnDisable()
         {
-            On.RoR2.HealthComponent.TakeDamageProcess -= increaseCount;
+            On.RoR2.HealthComponent.TakeDamageProcess -= IncreaseCount;
             if (clonedAura)
             {
                 Destroy(clonedAura);
@@ -77,7 +76,7 @@ namespace SeekerItems
             }
         }
 
-        private void increaseCount(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
+        private void IncreaseCount(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
         {
             orig(self, damageInfo);
             if (clonedAura && self.body == body) clonedAura.TookDamage(damageInfo);
