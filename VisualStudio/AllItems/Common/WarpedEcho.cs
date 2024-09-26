@@ -8,8 +8,6 @@ using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;
 using UnityEngine;
 using static SeekingItemReworks.ColorCode;
-using static ak.wwise.core;
-using BepInEx;
 
 namespace SeekerItems
 {
@@ -99,8 +97,11 @@ namespace SeekerItems
                 cursor.EmitDelegate<Action<CharacterBody, CharacterBody.DelayedDamageInfo>>((body, damageInfo) =>
                 {
                     damageInfo.timeUntilDamage = WarpedEcho.Delay_Base.Value;
-                    if (delayedVFX != null) UnityEngine.Object.Instantiate(delayedVFX, body.transform.position, Quaternion.identity, body.mainHurtBox.transform);
-                    if (delayedVFX != null) UnityEngine.Object.Instantiate(delayedVFX, body.transform.position, Quaternion.identity, body.mainHurtBox.transform);
+                    if (delayedVFX && body)
+                    {
+                        UnityEngine.Object.Instantiate(delayedVFX, body.transform.position, Quaternion.identity, body.mainHurtBox.transform);
+                        UnityEngine.Object.Instantiate(delayedVFX, body.transform.position, Quaternion.identity, body.mainHurtBox.transform);
+                    }
                 });
             }
             else

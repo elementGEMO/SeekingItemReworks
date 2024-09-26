@@ -43,6 +43,7 @@ namespace SeekingItemReworks
             // -- Seekers of the Storm Content -- \\
             WarpedEchoBehavior.Init();
             ChronicExpansionBehavior.Init();
+            KnockbackFinBehavior.Init();
         }
     }
 }
@@ -50,135 +51,6 @@ namespace SeekingItemReworks
 /*
 
             // -- Seekers of the Storm Content -- \\
-
-            // Knockback Fin #1
-            if (KnockbackFin.Rework.Value == 1)
-            {
-                // Disable vanilla Knockback Fin
-                IL.RoR2.GlobalEventManager.ProcessHitEnemy += il =>
-                {
-                    var cursor = new ILCursor(il);
-                    var itemIndex = -1;
-
-                    if (cursor.TryGotoNext(
-                        x => x.MatchLdloc(out itemIndex),
-                        x => x.MatchLdcI4(out _),
-                        x => x.MatchBle(out _),
-                        x => x.MatchLdloc(out _),
-                        x => x.MatchCallOrCallvirt<CharacterBody>("get_isBoss")
-                    ))
-                    {
-                        cursor.Emit(OpCodes.Ldloc, itemIndex);
-                        cursor.EmitDelegate<Func<int, int>>(itemCount => { return -1; });
-                        cursor.Emit(OpCodes.Stloc, itemIndex);
-                    }
-                    else
-                    {
-                        Logger.LogWarning(KnockbackFin.StaticName + " #1 - IL Fail #1");
-                    }
-                };
-
-                // New Knockback on hit effect chance
-                On.RoR2.GlobalEventManager.ProcessHitEnemy += (orig, self, damageInfo, victim) =>
-                {
-                    orig(self, damageInfo, victim);
-                    if (damageInfo.attacker && damageInfo.procCoefficient > 0)
-                    {
-                        CharacterBody attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
-                        CharacterBody victimBody = victim.GetComponent<CharacterBody>();
-                        int itemCount = attackerBody.inventory ? attackerBody.inventory.GetItemCount(DLC2Content.Items.KnockBackHitEnemies) : 0;
-
-                        if (victimBody && itemCount > 0)
-                        {
-                            CharacterMotor victimMotor = victim.GetComponent<CharacterMotor>(); victim.GetComponent<RigidbodyMotor>();
-                            float procChance = (float)(KnockbackFin.Chance_Base.Value + KnockbackFin.Chance_Stack.Value * (itemCount - 1)) * damageInfo.procCoefficient;
-
-                            if (KnockbackFin.IsHyperbolic.Value) procChance = Util.ConvertAmplificationPercentageIntoReductionPercentage(procChance);
-                            if (victimMotor && victimMotor.isGrounded && !victimBody.isChampion && (victimBody.bodyFlags & CharacterBody.BodyFlags.IgnoreFallDamage) == CharacterBody.BodyFlags.None && !victimBody.HasBuff(DLC2Content.Buffs.KnockUpHitEnemies) && Util.CheckRoll(procChance, 0f, null))
-                            {
-                                victimBody.AddTimedBuff(DLC2Content.Buffs.KnockUpHitEnemies, 5f);
-
-                                float scale = 1f;
-                                switch (victimBody.hullClassification)
-                                {
-                                    case HullClassification.Human:
-                                        scale = 1f;
-                                        break;
-                                    case HullClassification.Golem:
-                                        scale = 5f;
-                                        break;
-                                    case HullClassification.BeetleQueen:
-                                        scale = 10f;
-                                        break;
-                                }
-
-                                Util.PlaySound("Play_item_proc_knockBackHitEnemies", attackerBody.gameObject);
-                                EffectManager.SpawnEffect(GlobalEventManager.CommonAssets.knockbackFinEffect, new EffectData
-                                {
-                                    origin = victimBody.gameObject.transform.position,
-                                    scale = scale
-                                }, true);
-
-                                Vector3 upHeight = new(0, 1f, 0);
-                                float victimMass = victimMotor.mass * 25f;
-                                victimMotor.ApplyForce(victimMass * upHeight, false, false);
-                            }
-                        }
-                    }
-                };
-
-                // Damage to flying target
-                IL.RoR2.HealthComponent.TakeDamageProcess += il =>
-                {
-                    var cursor = new ILCursor(il);
-                    var damageIndex = -1;
-
-                    if (cursor.TryGotoNext(
-                        x => x.MatchStloc(out damageIndex),
-                        x => x.MatchLdloc(out _),
-                        x => x.MatchLdarg(0),
-                        x => x.MatchLdfld<HealthComponent>(nameof(HealthComponent.body)),
-                        x => x.MatchCallOrCallvirt<CharacterBody>("get_teamComponent")
-                    )) { }
-                    else
-                    {
-                        Logger.LogWarning(KnockbackFin.StaticName + " #1 - IL Fail #2");
-                    }
-
-                    if (cursor.TryGotoNext(
-                        x => x.MatchLdloc(out _),
-                        x => x.MatchLdarg(0),
-                        x => x.MatchCallOrCallvirt<HealthComponent>("get_fullCombinedHealth")
-                    ))
-                    {
-                        cursor.Emit(OpCodes.Ldarg_0);
-                        cursor.Emit(OpCodes.Ldarg_1);
-                        cursor.Emit(OpCodes.Ldloc, damageIndex);
-
-                        cursor.EmitDelegate<Func<HealthComponent, DamageInfo, float, float>>((healthComponent, damageInfo, damage) =>
-                        {
-                            float damageMod = damage;
-                            CharacterBody characterBody = damageInfo.attacker ? damageInfo.attacker.GetComponent<CharacterBody>() : null;
-                            int itemCount = (characterBody && characterBody.inventory) ? characterBody.inventory.GetItemCount(DLC2Content.Items.KnockBackHitEnemies) : 0;
-                            if (itemCount > 0)
-                            {
-                                if (healthComponent.body.isFlying || (healthComponent.body.characterMotor != null && !healthComponent.body.characterMotor.isGrounded))
-                                {
-                                    damageMod *= (float) 1f + (KnockbackFin.Damage_Base.Value + KnockbackFin.Damage_Stack.Value * (itemCount - 1)) / 100f;
-                                    EffectManager.SimpleImpactEffect(HealthComponent.AssetReferences.mercExposeConsumeEffectPrefab, damageInfo.position, Vector3.up, true);
-                                }
-                            }
-                            return damageMod;
-                        });
-
-                        cursor.Emit(OpCodes.Stloc, damageIndex);
-                    }
-                    else
-                    {
-                        Logger.LogWarning(KnockbackFin.StaticName + " #1 - IL Fail #3");
-                    }
-                };
-            }
 
             // Bolstering Lantern #0
             if (BolsteringLantern.Rework.Value > 0)

@@ -12,6 +12,16 @@ namespace SeekerItems
             // Common Tier Items
             if (WarpedEcho.Rework.Value == 1) { SetDesc(new WarpedEcho(WarpedEcho.Rework.Value)); }
             if (ChronicExpansion.Rework.Value == 1) { SetDesc(new ChronicExpansion(ChronicExpansion.Rework.Value)); }
+            if (KnockbackFin.Rework.Value == 1 && MainConfig.CursedRewrite.Value == false)
+            {
+                SetDesc(new KnockbackFin(KnockbackFin.Rework.Value));
+                SetName(new KnockbackFin(KnockbackFin.Rework.Value), "Flying Fin");
+            }
+            if (KnockbackFin.Rework.Value == 1 && MainConfig.CursedRewrite.Value == true)
+            {
+                SetDesc(new KnockbackFin(KnockbackFin.Rework.Value * -1));
+                SetName(new KnockbackFin(KnockbackFin.Rework.Value * -1), "Knockup Fin");
+            }
             /*
             if (ChronicExpansion.Rework.Value == 1) { SetDesc(new ChronicExpansion(ChronicExpansion.Rework.Value)); }
             if (KnockbackFin.Rework.Value == 1 && MainConfig.CursedRewrite.Value == false)
