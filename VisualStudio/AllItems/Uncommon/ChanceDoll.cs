@@ -1,5 +1,15 @@
 ﻿using BepInEx.Configuration;
+using IL.RoR2;
 using System;
+using UnityEngine.Networking;
+using RoR2.Items;
+using RoR2.Orbs;
+using RoR2;
+using UnityEngine;
+using System.Numerics;
+using UnityEngine.AddressableAssets;
+using R2API;
+
 using static SeekingItemReworks.ColorCode;
 
 namespace SeekerItems
@@ -32,4 +42,23 @@ namespace SeekerItems
         public static ConfigEntry<float> Chance_Base;
         public static ConfigEntry<float> Chance_Stack;
     }
+
+    public static class ChanceDollBehavior
+    {
+        public static void Init()
+        {
+            if (ChanceDoll.Rework.Value == 1)
+            {
+                On.RoR2.ShrineChanceBehavior.Awake += AddCounter;
+            }
+        }
+        private static void AddCounter(On.RoR2.ShrineChanceBehavior.orig_Awake orig, RoR2.ShrineChanceBehavior self)
+        {
+            orig(self);
+
+            ShrineFailCount shrineCount = self.gameObject.AddComponent<ShrineFailCount>();
+            shrineCount.FailCount = 0;
+        }
+    }
+    public class ShrineFailCount : NetworkBehaviour { public int FailCount; }
 }

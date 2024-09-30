@@ -1,22 +1,16 @@
 using BepInEx;
 using R2API;
-using RoR2;
-using MonoMod.Cil;
-using Mono.Cecil.Cil;
-using System;
-using UnityEngine;
-using UnityEngine.AddressableAssets;
-using System.Collections.Generic;
-using EntityStates;
-using UnityEngine.Networking;
 using SeekerItems;
-using BepInEx.Configuration;
 
 [assembly: HG.Reflection.SearchableAttribute.OptIn]
 namespace SeekingItemReworks
 {
-    [BepInDependency(ItemAPI.PluginGUID)]
     [BepInDependency(LanguageAPI.PluginGUID)]
+    [BepInDependency(RecalculateStatsAPI.PluginGUID)]
+    [BepInDependency(ItemAPI.PluginGUID)]
+    [BepInDependency(PrefabAPI.PluginGUID)]
+    [BepInDependency(ColorsAPI.PluginGUID)]
+
     [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
     public class Main : BaseUnityPlugin
     {
@@ -37,13 +31,18 @@ namespace SeekingItemReworks
             //SetUpUncommonItems();
             //SetUpLegendaryItems();
         }
-
-        public void SetUpCommon()
+        private void SetUpCommon()
         {
             // -- Seekers of the Storm Content -- \\
             WarpedEchoBehavior.Init();
             ChronicExpansionBehavior.Init();
             KnockbackFinBehavior.Init();
+            BolsteringLanternBehavior.Init();
+            AntlerShieldBehavior.Init();
+        }
+        private void SetUpUncommon()
+        {
+            ChanceDollBehavior.Init();
         }
     }
 }
@@ -51,202 +50,6 @@ namespace SeekingItemReworks
 /*
 
             // -- Seekers of the Storm Content -- \\
-
-            // Bolstering Lantern #0
-            if (BolsteringLantern.Rework.Value > 0)
-            {
-                // Skip Lantern's damage increase
-                IL.RoR2.CharacterBody.RecalculateStats += il =>
-                {
-                    var cursor = new ILCursor(il);
-
-                    if (cursor.TryGotoNext(
-                        x => x.MatchLdarg(0),
-                        x => x.MatchLdsfld(typeof(DLC2Content.Buffs), nameof(DLC2Content.Buffs.LowerHealthHigherDamageBuff)),
-                        x => x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.HasBuff))
-                    ))
-                    {
-                        cursor.GotoNext(MoveType.After, x => x.MatchBrfalse(out _));
-                        cursor.Emit(OpCodes.Br, cursor.Next);
-                    }
-                    else
-                    {
-                        Logger.LogWarning(BolsteringLantern.StaticName + " #0 - IL Fail #1");
-                    }
-                };
-            }
-            // Bolstering Lantern #1
-            if (BolsteringLantern.Rework.Value == 1)
-            {
-                // New health function
-                On.RoR2.CharacterBody.UpdateLowerHealthHigherDamage += (orig, body) =>
-                {
-                    if (!NetworkServer.active) return;
-
-                    int itemCount = body.inventory ? body.inventory.GetItemCount(DLC2Content.Items.LowerHealthHigherDamage) : 0;
-                    if (itemCount > 0)
-                    {
-                        float percentHealth = body.healthComponent.GetNormalizedHealth();
-                        if (percentHealth <= (BolsteringLantern.LowHealth.Value / 100f) && !body.HasBuff(DLC2Content.Buffs.LowerHealthHigherDamageBuff))
-                        {
-                            body.AddBuff(DLC2Content.Buffs.LowerHealthHigherDamageBuff);
-                            Util.PlaySound("Play_item_proc_lowerHealthHigherDamage_proc", body.gameObject);
-                            return;
-                        }
-                        else if (percentHealth >= (BolsteringLantern.HighHealth.Value / 100f) && body.HasBuff(DLC2Content.Buffs.LowerHealthHigherDamageBuff))
-                        {
-                            body.RemoveBuff(DLC2Content.Buffs.LowerHealthHigherDamageBuff);
-                            return;
-                        }
-                    }
-                    else if (itemCount <= 0 && body.HasBuff(DLC2Content.Buffs.LowerHealthHigherDamageBuff))
-                    {
-                        body.RemoveBuff(DLC2Content.Buffs.LowerHealthHigherDamageBuff);
-                    }
-                };
-
-                // Trigger fire damage when buffed
-                On.RoR2.GlobalEventManager.ProcessHitEnemy += (orig, self, damageInfo, victim) =>
-                {
-                    orig(self, damageInfo, victim);
-                    if (damageInfo.attacker && damageInfo.procCoefficient > 0)
-                    {
-                        CharacterBody characterBody = damageInfo.attacker.GetComponent<CharacterBody>();
-                        if (characterBody && characterBody.HasBuff(DLC2Content.Buffs.LowerHealthHigherDamageBuff))
-                        {
-                            int itemCount = characterBody.inventory.GetItemCount(DLC2Content.Items.LowerHealthHigherDamage);
-                            InflictDotInfo burnDot = new()
-                            {
-                                attackerObject = damageInfo.attacker,
-                                victimObject = victim,
-                                totalDamage = new float?(damageInfo.damage * (BolsteringLantern.Damage_Base.Value + BolsteringLantern.Damage_Stack.Value * (itemCount - 1)) / 100f),
-                                damageMultiplier = 1.0f,
-                                duration = 0.1f,
-                                dotIndex = DotController.DotIndex.Burn,
-                            };
-                            StrengthenBurnUtils.CheckDotForUpgrade(characterBody.inventory, ref burnDot);
-                            DotController.InflictDot(ref burnDot);
-                        }
-                    }
-                    else
-                    {
-                        Logger.LogWarning(KnockbackFin.StaticName + " #1 - IL Fail #1");
-                    }
-                };
-            }
-            // Bolstering Lantern #2
-            if (BolsteringLantern.Rework.Value == 2)
-            {
-                // Add buff for counting stacks on minions
-                new LanternCountBuff();
-
-                // Remove original Lantern's health functionality
-                On.RoR2.CharacterBody.UpdateLowerHealthHigherDamage += (orig, body) => { return; };
-
-                // Apply counting buffs to minions
-                On.RoR2.CharacterBody.FixedUpdate += (orig, body) =>
-                {
-                    orig(body);
-                    int lanternCount = (body && body.inventory) ? body.inventory.GetItemCount(DLC2Content.Items.LowerHealthHigherDamage) : 0;
-                    if (lanternCount > 0)
-                    {
-                        MinionOwnership.MinionGroup allyList = MinionOwnership.MinionGroup.FindGroup(body.masterObjectId);
-                        body.SetBuffCount(LanternCountBuff.LanternCounter.buffIndex, lanternCount);
-
-                        if (allyList != null)
-                        {
-                            foreach (MinionOwnership ally in allyList.members)
-                            {
-                                if (ally == null) continue;
-                                CharacterMaster allyMaster = ally.GetComponent<CharacterMaster>();
-                                if (allyMaster && allyMaster.inventory)
-                                {
-                                    if (allyMaster.GetBody()) allyMaster.GetBody().SetBuffCount(LanternCountBuff.LanternCounter.buffIndex, lanternCount);
-                                }
-                            }
-                        }
-                    }
-                };
-
-                // Trigger fire damage chance instead when buffed
-                On.RoR2.GlobalEventManager.ProcessHitEnemy += (orig, self, damageInfo, victim) =>
-                {
-                    orig(self, damageInfo, victim);
-                    if (damageInfo.attacker && damageInfo.procCoefficient > 0f)
-                    {
-                        CharacterBody allyBody = damageInfo.attacker.GetComponent<CharacterBody>();
-                        int countBuffs = allyBody ? allyBody.GetBuffCount(LanternCountBuff.LanternCounter) : 0;
-
-                        if (allyBody && countBuffs > 0 && Util.CheckRoll(BolsteringLantern.Chance_Base.Value + BolsteringLantern.Chance_Stack.Value * (countBuffs - 1), 0f, null))
-                        {
-                            Inventory targetInventory = (allyBody.master.minionOwnership.group != null && allyBody.master.minionOwnership.group.resolvedOwnerMaster) ? allyBody.master.minionOwnership.group.resolvedOwnerMaster.inventory : allyBody.inventory;
-                            InflictDotInfo burnDot = new()
-                            {
-                                attackerObject = damageInfo.attacker,
-                                victimObject = victim,
-                                totalDamage = new float?(damageInfo.damage * (BolsteringLantern.Damage_Base.Value + BolsteringLantern.Damage_Stack.Value * (countBuffs - 1)) / 100f),
-                                damageMultiplier = 1.0f,
-                                duration = 0.1f,
-                                dotIndex = DotController.DotIndex.Burn,
-                            };
-                            StrengthenBurnUtils.CheckDotForUpgrade(targetInventory, ref burnDot);
-                            DotController.InflictDot(ref burnDot);
-                        }
-                    }
-                };
-            }
-
-            // Antler Shield #1
-            if (AntlerShield.Rework.Value == 1)
-            {
-                // Scale armor with speed, and gain speed
-                IL.RoR2.CharacterBody.RecalculateStats += il =>
-                {
-                    var cursor = new ILCursor(il);
-
-                    if (cursor.TryGotoNext(
-                        x => x.MatchCall<CharacterBody>("set_armor"),
-                        x => x.MatchLdarg(0),
-                        x => x.MatchLdsfld(typeof(RoR2Content.Buffs), nameof(RoR2Content.Buffs.Cripple))
-                    ))
-                    {
-                        cursor.Index++;
-                        cursor.Emit(OpCodes.Ldarg_0);
-                        cursor.EmitDelegate<Action<CharacterBody>>(body =>
-                        {
-                            int itemCount = body.inventory ? body.inventory.GetItemCount(DLC2Content.Items.NegateAttack) : 0;
-                            if (itemCount > 0)
-                            {
-                                body.armor += (AntlerShield.Armor_Percent_Base.Value + AntlerShield.Armor_Percent_Stack.Value * (itemCount - 1)) / 100f * body.moveSpeed;
-                                body.moveSpeed *= 1 + (AntlerShield.Movement_Base.Value + AntlerShield.Movement_Stack.Value * (itemCount - 1)) / 100f;
-                            }
-                        });
-                    }
-                    else
-                    {
-                        Logger.LogWarning(AntlerShield.StaticName + " #1 - IL Fail #1");
-                    }
-                };
-
-                // Disable vanilla effect
-                IL.RoR2.HealthComponent.TakeDamageProcess += il =>
-                {
-                    var cursor = new ILCursor(il);
-
-                    if (cursor.TryGotoNext(
-                        x => x.MatchLdfld(typeof(HealthComponent.ItemCounts), nameof(HealthComponent.itemCounts.antlerShield)),
-                        x => x.MatchLdcI4(0)
-                    ))
-                    {
-                        cursor.Index += 2;
-                        cursor.EmitDelegate<Func<int, int>>(stack => int.MaxValue);
-                    }
-                    else
-                    {
-                        Logger.LogWarning(AntlerShield.StaticName + " #2 - IL Fail #1");
-                    }
-                };
-            }
         }
         private void SetUpUncommonItems()
         {

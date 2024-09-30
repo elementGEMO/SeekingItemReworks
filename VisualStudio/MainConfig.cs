@@ -49,7 +49,7 @@ namespace SeekerItems
             );
             WarpedEcho.Delay_Base = plugin.Config.Bind(
                 DLC2 + WarpedEcho.StaticName,
-                "! Rework #1 - Base Delay !", 3f,
+                "! Rework #1 - Base Delay !", 4f,
                 "[ 4 = 4 Seconds ]\nBase delay duration for damage"
             );
             WarpedEcho.Instance_Stack = plugin.Config.Bind(
@@ -91,6 +91,11 @@ namespace SeekerItems
                     "[ 0 = Vanilla | 1 = Rework #1 ]",
                     new AcceptableValueRange<int>(0, 1)
                 )
+            );
+            KnockbackFin.DamageColor = plugin.Config.Bind(
+                DLC2 + KnockbackFin.StaticName,
+                "Toggle Damage Color", true,
+                "[ True = Damage Color to Airborne | False = Vanilla ]"
             );
             KnockbackFin.IsHyperbolic = plugin.Config.Bind(
                 DLC2 + KnockbackFin.StaticName,

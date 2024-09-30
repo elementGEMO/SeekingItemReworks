@@ -9,24 +9,6 @@ using R2API;
 
 namespace SeekerItems
 {
-    internal class ChanceDollSetup
-    {
-        public static void Awake()
-        {
-            On.RoR2.ShrineChanceBehavior.Start += (orig, self) =>
-            {
-                orig(self);
-                ChanceDollBehavior shrineCount = self.gameObject.AddComponent<ChanceDollBehavior>();
-                shrineCount.FailCount = 0;
-            };
-        }
-    }
-
-    public class ChanceDollBehavior : NetworkBehaviour
-    {
-        public int FailCount;
-    }
-
     public class KarmaDollBehavior : MonoBehaviour
     {
         public void Awake()

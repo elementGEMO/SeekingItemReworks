@@ -7,6 +7,7 @@ using BepInEx.Configuration;
 using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;
 using UnityEngine;
+
 using static SeekingItemReworks.ColorCode;
 
 namespace SeekerItems
@@ -165,7 +166,6 @@ namespace SeekerItems
             if (itemCount > 0)
             {
                 itemCount = 1 + WarpedEcho.Instance_Stack.Value * (itemCount - 1);
-                int buffCount = self.GetBuffCount(DLC2Content.Buffs.DelayedDamageBuff);
                 if (self.oldDelayedDamageCount != itemCount)
                 {
                     int newDiff = itemCount - self.oldDelayedDamageCount;

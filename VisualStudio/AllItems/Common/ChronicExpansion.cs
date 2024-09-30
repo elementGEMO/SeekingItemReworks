@@ -3,6 +3,7 @@ using Mono.Cecil.Cil;
 using RoR2;
 using System;
 using BepInEx.Configuration;
+
 using static SeekingItemReworks.ColorCode;
 
 namespace SeekerItems

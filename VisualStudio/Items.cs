@@ -22,6 +22,9 @@ namespace SeekerItems
                 SetDesc(new KnockbackFin(KnockbackFin.Rework.Value * -1));
                 SetName(new KnockbackFin(KnockbackFin.Rework.Value * -1), "Knockup Fin");
             }
+            if (BolsteringLantern.Rework.Value == 1) { SetDesc(new BolsteringLantern(BolsteringLantern.Rework.Value)); }
+            if (BolsteringLantern.Rework.Value == 2) { SetDesc(new BolsteringLantern(BolsteringLantern.Rework.Value)); }
+            if (AntlerShield.Rework.Value == 1) { SetDesc(new AntlerShield(AntlerShield.Rework.Value)); }
             /*
             if (ChronicExpansion.Rework.Value == 1) { SetDesc(new ChronicExpansion(ChronicExpansion.Rework.Value)); }
             if (KnockbackFin.Rework.Value == 1 && MainConfig.CursedRewrite.Value == false)
