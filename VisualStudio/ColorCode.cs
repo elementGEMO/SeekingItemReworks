@@ -11,9 +11,6 @@
             cIsHealing
         };
 
-        public static string Style(this string self, FontColor style)
-        {
-            return "<style=" + style + ">" + self + "</style>";
-        }
+        public static string Style(this string self, FontColor style) => $"<style={style}>{self}</style>";
     }
 }

@@ -18,7 +18,7 @@ namespace SeekerItems
                 ItemInfo = "Gain an extra item from chests. Chance to be consumed on use once per stage.";
                 ItemDesc = string.Format(
                     "Gain an " + "extra item ".Style(FontColor.cIsUtility) + "when purchasing a " + "chest ".Style(FontColor.cIsUtility) + "with a " + "{0}% ".Style(FontColor.cIsUtility) + "(-{1}% per stack) ".Style(FontColor.cStack) + "chance to be " + "consumed ".Style(FontColor.cIsUtility) + "on use. At the start of each stage, it regenerates.",
-                    Math.Round(Consume_Base.Value, roundVal), Math.Round(Consume_Stack.Value, roundVal)
+                    RoundVal(Consume_Base.Value), RoundVal(Consume_Stack.Value)
                 );
             }
         }

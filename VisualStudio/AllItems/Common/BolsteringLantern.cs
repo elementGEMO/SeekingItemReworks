@@ -18,8 +18,8 @@ namespace SeekerItems
                 );
                 ItemDesc = string.Format(
                     "Falling below " + "{0}% health".Style(FontColor.cIsHealth) + " grants a buff that " + "ignites ".Style(FontColor.cIsDamage) + "enemies for " + "{1}% ".Style(FontColor.cIsDamage) + "(+{2}% per stack) ".Style(FontColor.cStack) + "base damage on hit, until " + "health ".Style(FontColor.cIsHealing) + "is restored to " + "{3}%".Style(FontColor.cIsHealing) + ".",
-                    LowHealth.Value, Math.Round(Damage_Base.Value, roundVal),
-                    Math.Round(Damage_Stack.Value, roundVal), HighHealth.Value
+                    LowHealth.Value, RoundVal(Damage_Base.Value),
+                    RoundVal(Damage_Stack.Value), HighHealth.Value
                 );
             }
             else if (descType == 2)
@@ -27,8 +27,8 @@ namespace SeekerItems
                 ItemInfo = "Chance on hit to ignite. Inherited by allies.";
                 ItemDesc = string.Format(
                     "{0}% ".Style(FontColor.cIsDamage) + "(+{1}% per stack) ".Style(FontColor.cStack) + "chance on hit to " + "ignite ".Style(FontColor.cIsDamage) + "enemies for " + "{2}% ".Style(FontColor.cIsDamage) + "(+{3}% per stack) ".Style(FontColor.cStack) + "base damage. This item is " + "inherited by allies ".Style(FontColor.cIsUtility) + "and is boosted with " + "Ignition Tank".Style(FontColor.cIsUtility) + ".",
-                    Math.Round(Chance_Base.Value, roundVal), Math.Round(Chance_Stack.Value, roundVal),
-                    Math.Round(Damage_Base.Value, roundVal), Math.Round(Damage_Stack.Value, roundVal)
+                    RoundVal(Chance_Base.Value), RoundVal(Chance_Stack.Value),
+                    RoundVal(Damage_Base.Value), RoundVal(Damage_Stack.Value)
                 );
             }
         }

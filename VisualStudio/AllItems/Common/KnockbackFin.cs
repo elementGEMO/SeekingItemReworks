@@ -20,8 +20,8 @@ namespace SeekerItems
                 ItemInfo = "Chance on hit to knock enemies into the air.\nDeal bonus damage to airborne enemies.";
                 ItemDesc = string.Format(
                     "{0}% ".Style(FontColor.cIsUtility) + "(+{1}% per stack) ".Style(FontColor.cStack) + "chance on hit to " + "knock enemies into the air".Style(FontColor.cIsUtility) + ". Deal " + "+{2}% ".Style(FontColor.cIsDamage) + "(+{3}% per stack) ".Style(FontColor.cStack) + "damage to " + "airborne ".Style(FontColor.cIsUtility) + "enemies.",
-                    Math.Round(Chance_Base.Value, roundVal), Math.Round(Chance_Stack.Value, roundVal),
-                    Math.Round(Damage_Base.Value, roundVal), Math.Round(Damage_Stack.Value, roundVal)
+                    RoundVal(Chance_Base.Value), RoundVal(Chance_Stack.Value),
+                    RoundVal(Damage_Base.Value), RoundVal(Damage_Stack.Value)
                 );
             }
             else if (descType == -1)
@@ -29,8 +29,8 @@ namespace SeekerItems
                 ItemInfo = "Chance on hit to knock up enemies.\nDeal bonus damage to airborne enemies.";
                 ItemDesc = string.Format(
                     "{0}% ".Style(FontColor.cIsUtility) + "(+{1}% per stack) ".Style(FontColor.cStack) + "chance on hit to " + "knock up enemies".Style(FontColor.cIsUtility) + ". Deal " + "+{2}% ".Style(FontColor.cIsDamage) + "(+{3}% per stack) ".Style(FontColor.cStack) + "damage to " + "airborne ".Style(FontColor.cIsUtility) + "enemies.",
-                    Math.Round(Chance_Base.Value, roundVal), Math.Round(Chance_Stack.Value, roundVal),
-                    Math.Round(Damage_Base.Value, roundVal), Math.Round(Damage_Stack.Value, roundVal)
+                    RoundVal(Chance_Base.Value), RoundVal(Chance_Stack.Value),
+                    RoundVal(Damage_Base.Value), RoundVal(Damage_Stack.Value)
                 );
             }
         }
