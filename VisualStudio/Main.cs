@@ -27,7 +27,7 @@ namespace SeekingItemReworks
             ItemInfo.SetUp();
 
             SetUpCommon();
-            //SetUpCommonItems();
+            SetUpUncommon();
             //SetUpUncommonItems();
             //SetUpLegendaryItems();
         }
