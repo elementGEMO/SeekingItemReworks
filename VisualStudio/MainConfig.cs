@@ -228,6 +228,11 @@ namespace SeekerItems
                 "! Rework #1 - Stack Chance !", 5f,
                 "[ 5.0 = +5% Chance ]\nMore chance for upgrade per shrine failure, per stack"
             );
+            ChanceDoll.Karma_Required = plugin.Config.Bind(
+                DLC2 + ChanceDoll.StaticName,
+                "! Rework #2 - Interacts Required !", 15,
+                "[ 5.0 = 5 Shrines ]\nHow much Shrines to count as X luck"
+            );
 
             // Sale Star
             SaleStar.Rework = plugin.Config.Bind(

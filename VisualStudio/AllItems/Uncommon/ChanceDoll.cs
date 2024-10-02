@@ -1,4 +1,6 @@
-﻿using BepInEx.Configuration;
+﻿using MonoMod.Cil;
+using Mono.Cecil.Cil;
+using BepInEx.Configuration;
 using System;
 using UnityEngine.Networking;
 using RoR2.Items;
@@ -8,9 +10,9 @@ using UnityEngine;
 using System.Numerics;
 using UnityEngine.AddressableAssets;
 using R2API;
+using System.Collections.Generic;
 
 using static SeekingItemReworks.ColorCode;
-using System.Collections.Generic;
 
 namespace SeekerItems
 {
@@ -41,6 +43,8 @@ namespace SeekerItems
         public static ConfigEntry<float> Hidden_Chance;
         public static ConfigEntry<float> Chance_Base;
         public static ConfigEntry<float> Chance_Stack;
+
+        public static ConfigEntry<int> Karma_Required;
     }
 
     public static class ChanceDollBehavior
@@ -55,7 +59,14 @@ namespace SeekerItems
                 On.RoR2.ShrineChanceBehavior.Awake += AddCounter;
                 On.RoR2.ShrineChanceBehavior.AddShrineStack += ReplaceBehavior;
             }
+            else if (ChanceDoll.Rework.Value == 2)
+            {
+                IL.RoR2.ShrineChanceBehavior.AddShrineStack += RemoveBehavior;
+                On.RoR2.GlobalEventManager.OnInteractionBegin += IncreaseKarma;
+                On.RoR2.CharacterMaster.OnInventoryChanged += LuckCount;
+            }
         }
+
         private static void AddCounter(On.RoR2.ShrineChanceBehavior.orig_Awake orig, RoR2.ShrineChanceBehavior self)
         {
             orig(self);
@@ -170,6 +181,168 @@ namespace SeekerItems
                 self.CallRpcSetPingable(false);
             }
         }
+        private static void RemoveBehavior(ILContext il)
+        {
+            var cursor = new ILCursor(il);
+
+            if (cursor.TryGotoNext(
+                x => x.MatchBle(out _),
+                x => x.MatchLdloc(out _),
+                x => x.MatchLdsfld(typeof(DLC2Content.Items), nameof(DLC2Content.Items.ExtraShrineItem))
+            ))
+            {
+                cursor.EmitDelegate<Func<int, int>>(self => int.MaxValue);
+            }
+            else
+            {
+                Log.Warning(ChanceDoll.StaticName + " #2 - IL Fail #1");
+            }
+        }
+        private static void IncreaseKarma(On.RoR2.GlobalEventManager.orig_OnInteractionBegin orig, GlobalEventManager self, Interactor interactor, IInteractable interactable, GameObject interactObject)
+        {
+            orig(self, interactor, interactable, interactObject);
+
+            PurchaseInteraction interactType = interactObject ? interactObject.GetComponent<PurchaseInteraction>() : null;
+            if (interactable != null && interactType)
+            {
+                CharacterBody characterBody = interactor.GetComponent<CharacterBody>();
+                int itemCount = characterBody.inventory ? characterBody.inventory.GetItemCount(DLC2Content.Items.ExtraShrineItem) : 0;
+
+                if (characterBody && itemCount > 0 && interactType.isShrine)
+                {
+                    PlayerCharacterMasterController masterController = characterBody.master.playerCharacterMasterController;
+                    KarmaDollBehavior karmaBehavior = masterController.GetComponent<KarmaDollBehavior>();
+                    if (!karmaBehavior) karmaBehavior = masterController.gameObject.AddComponent<KarmaDollBehavior>();
+
+                    karmaBehavior.KarmaOrb(characterBody, interactObject);
+                }
+                else if (characterBody && itemCount <= 0)
+                {
+                    PlayerCharacterMasterController masterController = characterBody.master.playerCharacterMasterController;
+                    KarmaDollBehavior karmaBehavior = masterController.GetComponent<KarmaDollBehavior>();
+                    if (karmaBehavior) karmaBehavior.UpdateLuck();
+                }
+            }
+        }
+        private static void LuckCount(On.RoR2.CharacterMaster.orig_OnInventoryChanged orig, CharacterMaster self)
+        {
+            orig(self);
+
+            if (self.playerCharacterMasterController)
+            {
+                KarmaDollBehavior karmaBehavior = self.playerCharacterMasterController.GetComponent<KarmaDollBehavior>();
+                if (karmaBehavior) self.luck += karmaBehavior.luckStat;
+            }
+        }
     }
     public class ShrineFailCount : NetworkBehaviour { public int FailCount; }
+    public class KarmaDollBehavior : MonoBehaviour
+    {
+        public CharacterBody owner;
+        public int luckStat;
+        private int karmaCount;
+        private int ItemCount { get => (owner && owner.inventory) ? owner.inventory.GetItemCount(DLC2Content.Items.ExtraShrineItem) : 0; }
+
+        private void Awake() => (luckStat, karmaCount, owner) = (0, 0, GetComponent<CharacterBody>());
+        public void KarmaOrb(CharacterBody body, GameObject interactableObject)
+        {
+            if (!body && !interactableObject) return;
+            if (luckStat < (ItemCount))
+            {
+                KarmaDollOrb karmaOrb = new()
+                {
+                    origin = interactableObject.transform.position,
+                    target = body.mainHurtBox,
+                    arrivalTime = 5f, // Add Config Value Here?
+
+                };
+                OrbManager.instance.AddOrb(karmaOrb);
+            }
+        }
+        public void IncreaseKarma()
+        {
+            karmaCount += 1; // Add Config Value Here
+            if (karmaCount >= ChanceDoll.Karma_Required.Value)
+            {
+                karmaCount = 0;
+                UpdateLuck(1); // Add Config Value Here
+                //owner.GetComponent<CharacterMaster>().OnInventoryChanged();
+                owner.master.OnInventoryChanged();
+            }
+        }
+        public void UpdateLuck(int modifier = 0) => luckStat = Math.Min(luckStat + modifier, ItemCount);
+    }
+    public class KarmaDollOrb : Orb
+    {
+        [InitDuringStartup]
+        private static void Init()
+        {
+            orbEffect = PrefabAPI.InstantiateClone(Resources.Load<GameObject>("Prefabs/Effects/OrbEffects/InfusionOrbEffect"), "KarmaDollOrbEffect", true);
+
+            Color yellowOrb = new(0.92f / 4f, 0.78f / 4f, 0.42f / 4f);
+            Color yellowLightOrb = new(0.98f / 2f, 0.86f / 2f, 0.51f / 2f);
+
+            ParticleSystemRenderer mainOrb = orbEffect.transform.Find("VFX").Find("Core").GetComponent<ParticleSystemRenderer>();
+            if (mainOrb)
+            {
+                var newMaterial = new Material(mainOrb.sharedMaterial);
+                newMaterial.DisableKeyword("VERTEXCOLOR");
+                newMaterial.SetColor("_TintColor", yellowLightOrb);
+                newMaterial.SetColor("_Color", yellowLightOrb);
+                mainOrb.sharedMaterial = newMaterial;
+            }
+
+            ParticleSystem orbGlow = orbEffect.transform.Find("VFX").Find("PulseGlow").GetComponent<ParticleSystem>();
+            if (orbGlow)
+            {
+                var mainGlow = orbGlow.main;
+                mainGlow.startColor = yellowOrb;
+                mainGlow.startSizeMultiplier = 0.01f;
+            }
+
+            TrailRenderer trail = orbEffect.transform.Find("TrailParent").Find("Trail").GetComponent<TrailRenderer>();
+            if (trail)
+            {
+                var newMaterial = new Material(trail.sharedMaterial);
+                newMaterial.DisableKeyword("VERTEXCOLOR");
+                newMaterial.SetColor("_TintColor", yellowOrb);
+                newMaterial.SetColor("_Color", yellowOrb);
+                newMaterial.SetTexture("_RemapTex", mainOrb.sharedMaterial.GetTexture("_RemapTex"));
+                trail.sharedMaterial = newMaterial;
+            }
+
+            var gameObj = orbEffect.GetComponent<AkGameObj>();
+            if (gameObj) UnityEngine.Object.Destroy(gameObj);
+
+            new EffectDef()
+            {
+                prefab = orbEffect,
+                prefabName = "KarmaDollOrbEffect",
+                prefabEffectComponent = orbEffect.GetComponent<EffectComponent>()
+            };
+
+            ContentAddition.AddEffect(orbEffect);
+        }
+        public override void Begin()
+        {
+            duration = distanceToTarget / arrivalTime;
+            EffectData effectData = new()
+            {
+                origin = origin,
+                genericFloat = duration
+            };
+            effectData.SetHurtBoxReference(target);
+            EffectManager.SpawnEffect(orbEffect, effectData, true);
+            HurtBox hurtBox = target.GetComponent<HurtBox>();
+            CharacterBody characterBody = hurtBox?.healthComponent.GetComponent<CharacterBody>();
+            if (characterBody) karmaBehavior = characterBody.master.playerCharacterMasterController.GetComponent<KarmaDollBehavior>();
+        }
+        public override void OnArrival()
+        {
+            if (karmaBehavior) karmaBehavior.IncreaseKarma();
+        }
+
+        private KarmaDollBehavior karmaBehavior;
+        private static GameObject orbEffect;
+    }
 }

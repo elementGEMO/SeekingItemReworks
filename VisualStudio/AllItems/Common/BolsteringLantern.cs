@@ -69,7 +69,7 @@ namespace SeekerItems
                 On.RoR2.CharacterBody.UpdateLowerHealthHigherDamage += HealthTrigger;
                 On.RoR2.GlobalEventManager.ProcessHitEnemy += InflictFire;
             }
-            if (BolsteringLantern.Rework.Value == 2)
+            else if (BolsteringLantern.Rework.Value == 2)
             {
                 new LanternCountBuff();
                 IL.RoR2.CharacterBody.UpdateLowerHealthHigherDamage += RemoveBuff;
