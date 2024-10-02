@@ -20,9 +20,9 @@ namespace SeekerItems
                 ItemDesc = string.Format(
                     "Getting hit surrounds you in a " + "ring of thorns ".Style(FontColor.cIsDamage) + "that {0}" + "for " + "{1}% ".Style(FontColor.cIsDamage) + "(+{2}% per stack) ".Style(FontColor.cStack) + "damage. The ring " + "grows when taking damage".Style(FontColor.cIsDamage) + ", increasing its radius by " + "{3}m".Style(FontColor.cIsDamage) + ". Stacks up to " + "{4}m ".Style(FontColor.cIsDamage) + "(+{5}m per stack)".Style(FontColor.cStack) + ".",
                     sequenceDoT,
-                    Math.Round(Damage_Base.Value, roundVal), Math.Round(Damage_Stack.Value, roundVal),
-                    Math.Round(Range_Increment.Value, roundVal), Math.Round(Base_Cap.Value, roundVal),
-                    Math.Round(Stack_Cap.Value, roundVal)
+                    RoundVal(Damage_Base.Value), RoundVal(Damage_Stack.Value),
+                    RoundVal(Range_Increment.Value), RoundVal(Base_Cap.Value),
+                    RoundVal(Stack_Cap.Value)
                 );
             }
         }

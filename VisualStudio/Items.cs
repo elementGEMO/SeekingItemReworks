@@ -77,12 +77,10 @@ namespace SeekerItems
     }
     internal class ItemTemplate
     {
-        public static int roundVal = MainConfig.RoundNumber.Value;
-
         public string ItemInternal;
         public string ItemInfo;
         public string ItemDesc;
 
-        public static double RoundVal(float value) => Math.Round(value, roundVal);
+        public static float RoundVal(float value) => MathF.Round(value, MainConfig.RoundNumber.Value);
     }
 }
