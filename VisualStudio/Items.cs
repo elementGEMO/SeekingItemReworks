@@ -25,22 +25,14 @@ namespace SeekerItems
             if (BolsteringLantern.Rework.Value == 1) { SetDesc(new BolsteringLantern(BolsteringLantern.Rework.Value)); }
             if (BolsteringLantern.Rework.Value == 2) { SetDesc(new BolsteringLantern(BolsteringLantern.Rework.Value)); }
             if (AntlerShield.Rework.Value == 1) { SetDesc(new AntlerShield(AntlerShield.Rework.Value)); }
-            /*
-            if (ChronicExpansion.Rework.Value == 1) { SetDesc(new ChronicExpansion(ChronicExpansion.Rework.Value)); }
-            if (KnockbackFin.Rework.Value == 1 && MainConfig.CursedRewrite.Value == false)
-            { 
-                SetDesc(new KnockbackFin(KnockbackFin.Rework.Value));
-                SetName(new KnockbackFin(KnockbackFin.Rework.Value), "Flying Fin");
-            }
-            if (KnockbackFin.Rework.Value == 1 && MainConfig.CursedRewrite.Value == true)
+            if (ChanceDoll.Rework.Value == 1) { SetDesc(new ChanceDoll(ChanceDoll.Rework.Value)); }
+            if (ChanceDoll.Rework.Value == 2)
             {
-                SetDesc(new KnockbackFin(KnockbackFin.Rework.Value * -1));
-                SetName(new KnockbackFin(KnockbackFin.Rework.Value * -1), "Knockup Fin");
+                SetDesc(new ChanceDoll(ChanceDoll.Rework.Value));
+                SetName(new ChanceDoll(ChanceDoll.Rework.Value), "Karma Doll");
             }
-            if (BolsteringLantern.Rework.Value == 1) { SetDesc(new BolsteringLantern(BolsteringLantern.Rework.Value)); }
-            if (BolsteringLantern.Rework.Value == 2) { SetDesc(new BolsteringLantern(BolsteringLantern.Rework.Value)); }
-            if (AntlerShield.Rework.Value == 1) { SetDesc(new AntlerShield(AntlerShield.Rework.Value)); }
-
+            // Uncommon Tier Items
+            /*
             // Uncommon Tier Items
             if (ChanceDoll.Rework.Value == 1) { SetDesc(new ChanceDoll(ChanceDoll.Rework.Value)); }
             if (ChanceDoll.Rework.Value == 2) { 
