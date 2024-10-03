@@ -21,6 +21,12 @@ namespace SeekerItems
         {
             string StaticName = "! General !";
 
+            EnableLogs = plugin.Config.Bind(
+                StaticName,
+                "Enable Logs", true,
+                "[ True = Keeps Logs | False = Turns Off Logs]\n If you disable this, I may not entirely be able to help you when an IL Hook fails"
+            );
+
             RoundNumber = plugin.Config.Bind(
                 StaticName,
                 "Item Stats Round", 0,
@@ -30,7 +36,7 @@ namespace SeekerItems
             CursedRewrite = plugin.Config.Bind(
                 StaticName,
                 "Cursed Rewrite", false,
-                "Enable for cursed item description rewrites"
+                "[ False = Original | True = Cursed..? ]\nEnable for cursed item description rewrites"
             );
         }
 
@@ -230,8 +236,23 @@ namespace SeekerItems
             );
             ChanceDoll.Karma_Required = plugin.Config.Bind(
                 DLC2 + ChanceDoll.StaticName,
-                "! Rework #2 - Interacts Required !", 15,
-                "[ 5.0 = 5 Shrines ]\nHow much Shrines to count as X luck"
+                "! Rework #2 - Interacts Required !", 10,
+                "[ 10.0 = 10 Shrines ]\nHow much Shrines to count as X luck"
+            );
+            ChanceDoll.Luck_Per = plugin.Config.Bind(
+                DLC2 + ChanceDoll.StaticName,
+                "! Rework #2 - Luck Gained !", 1,
+                "[ 1.0 = +1 Luck ]\nHow much luck gained"
+            );
+            ChanceDoll.Karma_Base_Cap = plugin.Config.Bind(
+                DLC2 + ChanceDoll.StaticName,
+                "! Rework #2 - Base Luck Cap !", 1,
+                "[ 1.0 = 1 Luck Cap ]\nMax amount of luck"
+            );
+            ChanceDoll.Karma_Stack_Cap = plugin.Config.Bind(
+                DLC2 + ChanceDoll.StaticName,
+                "! Rework #2 - Stack Luck Cap !", 1,
+                "[ 1.0 = +1 Luck Cap ]\nAdditional max amount of luck per stack"
             );
 
             // Sale Star
@@ -481,5 +502,6 @@ namespace SeekerItems
 
         public static ConfigEntry<int> RoundNumber;
         public static ConfigEntry<bool> CursedRewrite;
+        public static ConfigEntry<bool> EnableLogs;
     }
 }

@@ -3,12 +3,9 @@ using Mono.Cecil.Cil;
 using BepInEx.Configuration;
 using System;
 using UnityEngine.Networking;
-using RoR2.Items;
 using RoR2.Orbs;
 using RoR2;
 using UnityEngine;
-using System.Numerics;
-using UnityEngine.AddressableAssets;
 using R2API;
 using System.Collections.Generic;
 
@@ -32,8 +29,15 @@ namespace SeekerItems
             }
             if (descType == 2)
             {
-                ItemInfo = "Funny luck infusion.";
-                ItemDesc = "Hi :3";
+                ItemInfo = string.Format(
+                    "Activating {0} Shrines permanently increases your luck.",
+                    RoundVal(Karma_Required.Value)
+                );
+                ItemDesc = string.Format(
+                    "Every " + "{0} ".Style(FontColor.cIsUtility) + "Shrines, all random effects are rerolled " + "+{1} ".Style(FontColor.cIsUtility) + "times for a " + "favorable outcome permanently".Style(FontColor.cIsUtility) + ", up to a " + "maximum ".Style(FontColor.cIsUtility) + "of " + "{2} ".Style(FontColor.cIsUtility) + "(+{3} per stack) ".Style(FontColor.cStack) + "times.",
+                    RoundVal(Karma_Required.Value), RoundVal(Luck_Per.Value),
+                    RoundVal(Karma_Base_Cap.Value), RoundVal(Karma_Stack_Cap.Value)
+                );
             }
         }
         public static string StaticName = "Chance Doll";
@@ -45,6 +49,9 @@ namespace SeekerItems
         public static ConfigEntry<float> Chance_Stack;
 
         public static ConfigEntry<int> Karma_Required;
+        public static ConfigEntry<int> Karma_Base_Cap;
+        public static ConfigEntry<int> Karma_Stack_Cap;
+        public static ConfigEntry<int> Luck_Per;
     }
 
     public static class ChanceDollBehavior
@@ -231,21 +238,26 @@ namespace SeekerItems
             if (self.playerCharacterMasterController)
             {
                 KarmaDollBehavior karmaBehavior = self.playerCharacterMasterController.GetComponent<KarmaDollBehavior>();
-                if (karmaBehavior) self.luck += karmaBehavior.luckStat;
+                if (karmaBehavior)
+                {
+                    karmaBehavior.UpdateLuck();
+                    self.luck += karmaBehavior.luckStat;
+                }
             }
         }
     }
     public class ShrineFailCount : NetworkBehaviour { public int FailCount; }
     public class KarmaDollBehavior : MonoBehaviour
     {
-        public CharacterBody owner;
+        private int ItemCount { get { return (owner && owner.inventory) ? owner.inventory.GetItemCount(DLC2Content.Items.ExtraShrineItem) : 0; } }
+        private CharacterBody owner;
         public int luckStat;
         private int karmaCount;
-        private int ItemCount { get => (owner && owner.inventory) ? owner.inventory.GetItemCount(DLC2Content.Items.ExtraShrineItem) : 0; }
 
-        private void Awake() => (luckStat, karmaCount, owner) = (0, 0, GetComponent<CharacterBody>());
+        private void OnEnable() => ReattachOwner();
         public void KarmaOrb(CharacterBody body, GameObject interactableObject)
         {
+            ReattachOwner();
             if (!body && !interactableObject) return;
             if (luckStat < (ItemCount))
             {
@@ -253,24 +265,34 @@ namespace SeekerItems
                 {
                     origin = interactableObject.transform.position,
                     target = body.mainHurtBox,
-                    arrivalTime = 5f, // Add Config Value Here?
-
+                    arrivalTime = 5f
                 };
                 OrbManager.instance.AddOrb(karmaOrb);
             }
         }
         public void IncreaseKarma()
         {
-            karmaCount += 1; // Add Config Value Here
+            karmaCount++;
             if (karmaCount >= ChanceDoll.Karma_Required.Value)
             {
                 karmaCount = 0;
-                UpdateLuck(1); // Add Config Value Here
-                //owner.GetComponent<CharacterMaster>().OnInventoryChanged();
+                UpdateLuck(ChanceDoll.Luck_Per.Value);
                 owner.master.OnInventoryChanged();
+
+                EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/ExtraStatsOnLevelUpEffect"), new EffectData
+                {
+                    origin = owner.gameObject.transform.position,
+                    rotation = UnityEngine.Quaternion.identity,
+                    scale = 1f,
+                    color = new Color(0.98f / 4f, 0.86f / 4f, 0.51f / 4f)
+                }, true);
             }
         }
-        public void UpdateLuck(int modifier = 0) => luckStat = Math.Min(luckStat + modifier, ItemCount);
+        public void UpdateLuck(int increase = 0) => luckStat = Math.Min(luckStat + increase, ChanceDoll.Karma_Base_Cap.Value * (ItemCount > 0 ? 1 : 0) + ChanceDoll.Karma_Stack_Cap.Value * ItemCount);
+        private void ReattachOwner()
+        {
+            if (!owner) owner = GetComponent<CharacterMaster>().GetBody();
+        }
     }
     public class KarmaDollOrb : Orb
     {
@@ -278,9 +300,10 @@ namespace SeekerItems
         private static void Init()
         {
             orbEffect = PrefabAPI.InstantiateClone(Resources.Load<GameObject>("Prefabs/Effects/OrbEffects/InfusionOrbEffect"), "KarmaDollOrbEffect", true);
+            if (!orbEffect.GetComponent<NetworkIdentity>()) orbEffect.AddComponent<NetworkIdentity>();
 
-            Color yellowOrb = new(0.92f / 4f, 0.78f / 4f, 0.42f / 4f);
-            Color yellowLightOrb = new(0.98f / 2f, 0.86f / 2f, 0.51f / 2f);
+            Color yellowOrb = new(0.92f / 3f, 0.78f / 3f, 0.42f / 3f);
+            Color yellowLightOrb = new(0.98f, 0.86f, 0.51f);
 
             ParticleSystemRenderer mainOrb = orbEffect.transform.Find("VFX").Find("Core").GetComponent<ParticleSystemRenderer>();
             if (mainOrb)
@@ -309,10 +332,8 @@ namespace SeekerItems
                 newMaterial.SetColor("_Color", yellowOrb);
                 newMaterial.SetTexture("_RemapTex", mainOrb.sharedMaterial.GetTexture("_RemapTex"));
                 trail.sharedMaterial = newMaterial;
+                trail.widthMultiplier = 1f;
             }
-
-            var gameObj = orbEffect.GetComponent<AkGameObj>();
-            if (gameObj) UnityEngine.Object.Destroy(gameObj);
 
             new EffectDef()
             {

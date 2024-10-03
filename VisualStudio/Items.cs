@@ -25,12 +25,15 @@ namespace SeekerItems
             if (BolsteringLantern.Rework.Value == 1) { SetDesc(new BolsteringLantern(BolsteringLantern.Rework.Value)); }
             if (BolsteringLantern.Rework.Value == 2) { SetDesc(new BolsteringLantern(BolsteringLantern.Rework.Value)); }
             if (AntlerShield.Rework.Value == 1) { SetDesc(new AntlerShield(AntlerShield.Rework.Value)); }
+
+            // Uncommon Tier Items
             if (ChanceDoll.Rework.Value == 1) { SetDesc(new ChanceDoll(ChanceDoll.Rework.Value)); }
             if (ChanceDoll.Rework.Value == 2)
             {
                 SetDesc(new ChanceDoll(ChanceDoll.Rework.Value));
                 SetName(new ChanceDoll(ChanceDoll.Rework.Value), "Karma Doll");
             }
+            if (SaleStar.Rework.Value == 1) { SetDesc(new SaleStar(SaleStar.Rework.Value)); }
             // Uncommon Tier Items
             /*
             // Uncommon Tier Items

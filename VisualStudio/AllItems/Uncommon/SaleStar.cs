@@ -1,5 +1,9 @@
-﻿using BepInEx.Configuration;
+﻿using MonoMod.Cil;
+using Mono.Cecil.Cil;
+using BepInEx.Configuration;
 using System;
+using RoR2;
+
 using static SeekingItemReworks.ColorCode;
 
 namespace SeekerItems
@@ -26,8 +30,64 @@ namespace SeekerItems
         public static string StaticName = "Sale Star";
 
         public static ConfigEntry<int> Rework;
+
         public static ConfigEntry<bool> IsHyperbolic;
         public static ConfigEntry<float> Consume_Base;
         public static ConfigEntry<float> Consume_Stack;
+    }
+
+    public static class SaleStarBehavior
+    {
+        public static void Init()
+        {
+            if (SaleStar.Rework.Value == 1)
+            {
+                IL.RoR2.PurchaseInteraction.OnInteractionBegin += ReplaceEffect;
+                On.RoR2.PurchaseInteraction.OnInteractionBegin += ChanceConsume;
+            }
+        }
+
+        private static void ReplaceEffect(ILContext il)
+        {
+            var cursor = new ILCursor(il);
+
+            if (cursor.TryGotoNext(
+                x => x.MatchBle(out _),
+                x => x.MatchLdarg(0),
+                x => x.MatchLdfld<PurchaseInteraction>(nameof(PurchaseInteraction.saleStarCompatible))
+            ))
+            {
+                cursor.EmitDelegate<Func<int, int>>(stack => int.MaxValue);
+            }
+            else
+            {
+                Log.Warning(SaleStar.StaticName + " #1 - IL Fail #1");
+            }
+        }
+
+        private static void ChanceConsume(On.RoR2.PurchaseInteraction.orig_OnInteractionBegin orig, PurchaseInteraction self, Interactor activator)
+        {
+            orig(self, activator);
+
+            CharacterBody body = activator.GetComponent<CharacterBody>();
+            int itemCount = body.inventory ? body.inventory.GetItemCount(DLC2Content.Items.LowerPricedChests) : 0;
+
+            if (itemCount > 0 && self.saleStarCompatible)
+            {
+                if (self.GetComponent<ChestBehavior>()) self.GetComponent<ChestBehavior>().dropCount++;
+                else if (self.GetComponent<RouletteChestController>()) self.GetComponent<RouletteChestController>().dropCount++;
+
+                float percentConvert = SaleStar.IsHyperbolic.Value ? Util.ConvertAmplificationPercentageIntoReductionPercentage(SaleStar.Consume_Stack.Value * (itemCount - 1)) : SaleStar.Consume_Stack.Value * (itemCount - 1);
+
+                if (Util.CheckRoll(SaleStar.Consume_Base.Value - percentConvert, body.master))
+                {
+                    body.inventory.RemoveItem(DLC2Content.Items.LowerPricedChests, itemCount);
+                    body.inventory.GiveItem(DLC2Content.Items.LowerPricedChestsConsumed, itemCount);
+                    CharacterMasterNotificationQueue.SendTransformNotification(body.master, DLC2Content.Items.LowerPricedChests.itemIndex, DLC2Content.Items.LowerPricedChestsConsumed.itemIndex, CharacterMasterNotificationQueue.TransformationType.SaleStarRegen);
+                }
+
+                Util.PlaySound("Play_item_proc_lowerPricedChest", self.gameObject);
+            }
+        }
     }
 }
