@@ -28,7 +28,6 @@ namespace SeekingItemReworks
 
             SetUpCommon();
             SetUpUncommon();
-            //SetUpUncommonItems();
             //SetUpLegendaryItems();
         }
         private void SetUpCommon()
@@ -42,223 +41,19 @@ namespace SeekingItemReworks
         }
         private void SetUpUncommon()
         {
+            // -- Seekers of the Storm Content -- \\
             ChanceDollBehavior.Init();
             SaleStarBehavior.Init();
+            UnstableTransmitterBehavior.Init();
+            NoxiousThornBehavior.Init();
+
+            // -- Risk of Rain 2 Content -- \\
+            OldWarStealthkitBehavior.Init();
         }
     }
 }
 
 /*
-
-            // -- Seekers of the Storm Content -- \\
-
-            // Sale Star #1
-            if (SaleStar.Rework.Value == 1)
-            {
-                // Remove vanilla effect
-                IL.RoR2.PurchaseInteraction.OnInteractionBegin += il =>
-                {
-                    var cursor = new ILCursor(il);
-
-                    if (cursor.TryGotoNext(
-                        x => x.MatchLdsfld(typeof(DLC2Content.Items), nameof(DLC2Content.Items.LowerPricedChests)),
-                        x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCount)),
-                        x => x.MatchLdcI4(out _)
-                    ))
-                    {
-                        cursor.Index += 3;
-                        cursor.EmitDelegate<Func<int, int>>(stack => int.MaxValue);
-                    }
-                    else
-                    {
-                        Logger.LogWarning(SaleStar.StaticName + " #1 - IL Fail #1");
-                    }
-                };
-
-                // Implement new purchase stack
-                On.RoR2.PurchaseInteraction.OnInteractionBegin += (orig, self, activator) =>
-                {
-                    orig(self, activator);
-                    CharacterBody body = activator.GetComponent<CharacterBody>();
-                    int itemCount = body.inventory ? body.inventory.GetItemCount(DLC2Content.Items.LowerPricedChests) : 0;
-                    if (itemCount > 0 && self.saleStarCompatible)
-                    {
-                        if (self.GetComponent<ChestBehavior>())
-                        {
-                            self.GetComponent<ChestBehavior>().dropCount++;
-                        }
-                        else if (self.GetComponent<RouletteChestController>())
-                        {
-                            self.GetComponent<RouletteChestController>().dropCount++;
-                        }
-
-                        float percentConvert = SaleStar.IsHyperbolic.Value ? Util.ConvertAmplificationPercentageIntoReductionPercentage(SaleStar.Consume_Stack.Value * (itemCount - 1)) : SaleStar.Consume_Stack.Value * (itemCount - 1);
-
-                        if (Util.CheckRoll(SaleStar.Consume_Base.Value - percentConvert, body.master))
-                        {
-                            body.inventory.RemoveItem(DLC2Content.Items.LowerPricedChests, itemCount);
-                            body.inventory.GiveItem(DLC2Content.Items.LowerPricedChestsConsumed, itemCount);
-                            CharacterMasterNotificationQueue.SendTransformNotification(body.master, DLC2Content.Items.LowerPricedChests.itemIndex, DLC2Content.Items.LowerPricedChestsConsumed.itemIndex, CharacterMasterNotificationQueue.TransformationType.SaleStarRegen);
-                        }
-
-                        Util.PlaySound("Play_item_proc_lowerPricedChest", self.gameObject);
-                    }
-                };
-            }
-
-            // Unstable Transmitter #1
-            if (UnstableTransmitter.Rework.Value == 1)
-            {
-                // Bleed area effect, intangible skill state
-                On.RoR2.CharacterBody.RpcTeleportCharacterToSafety += (orig, self) =>
-                {
-                    if (!self.hasEffectiveAuthority) return;
-                    self.hasTeleported = true;
-                    int itemCount = self.inventory.GetItemCount(DLC2Content.Items.TeleportOnLowHealth);
-                    EntityStateMachine.FindByCustomName(self.gameObject, "Body").SetNextState(new IntangibleSkillState());
-                    List<HurtBox> list = HG.CollectionPool<HurtBox, List<HurtBox>>.RentCollection();
-                    SphereSearch hitBox = new SphereSearch();
-                    hitBox.mask = LayerIndex.entityPrecise.mask;
-                    hitBox.origin = self.transform.position;
-                    hitBox.radius = UnstableTransmitter.Range.Value;
-                    hitBox.queryTriggerInteraction = QueryTriggerInteraction.UseGlobal;
-                    hitBox.RefreshCandidates();
-                    hitBox.FilterCandidatesByHurtBoxTeam(TeamMask.GetEnemyTeams(self.teamComponent.teamIndex));
-                    hitBox.OrderCandidatesByDistance();
-                    hitBox.FilterCandidatesByDistinctHurtBoxEntities();
-                    hitBox.GetHurtBoxes(list);
-                    hitBox.ClearCandidates();
-                    for (int i = 0; i < list.Count; i++)
-                    {
-                        HurtBox hurtBox = list[i];
-                        CharacterBody victimBody = hurtBox.healthComponent.body;
-                        if (hurtBox && hurtBox.healthComponent && hurtBox.healthComponent.alive)
-                        {
-                            InflictDotInfo bleedDot = new()
-                            {
-                                attackerObject = self.gameObject,
-                                victimObject = victimBody.gameObject,
-                                dotIndex = DotController.DotIndex.Bleed,
-                                damageMultiplier = self.damage * ((UnstableTransmitter.Damage_Base.Value + UnstableTransmitter.Damage_Stack.Value * (itemCount - 1)) / 150f),
-                                duration = 3.0f
-                            };
-                            DotController.InflictDot(ref bleedDot);
-                        }
-                    }
-                };
-
-                // Disabling original condition
-                IL.RoR2.HealthComponent.UpdateLastHitTime += il =>
-                {
-                    var cursor = new ILCursor(il);
-
-                    if (cursor.TryGotoNext(
-                        x => x.MatchLdcI4(out _),
-                        x => x.MatchBle(out _),
-                        x => x.MatchLdarg(0),
-                        x => x.MatchLdfld<HealthComponent>(nameof(HealthComponent.body)),
-                        x => x.MatchLdsfld(typeof(DLC2Content.Buffs), nameof(DLC2Content.Buffs.TeleportOnLowHealth))
-                    ))
-                    {
-                        cursor.EmitDelegate<Func<int, int>>(stack => int.MaxValue);
-                    }
-                    else
-                    {
-                        Logger.LogWarning(BolsteringLantern.StaticName + " #1 - IL Fail #1");
-                    }
-                };
-
-                // New trigger functionality
-                On.RoR2.HealthComponent.UpdateLastHitTime += (orig, self, damageValue, damagePosition, damageIsSilent, attacker) =>
-                {
-                    if (NetworkServer.active && self.body && damageValue > 0)
-                    {
-                        float healthPercent = (float)(self.health + self.shield) / self.combinedHealth;
-                        int itemCount = self.body.inventory ? self.body.inventory.GetItemCount(DLC2Content.Items.TeleportOnLowHealth) : 0;
-                        bool hasBuff = self.body ? self.body.HasBuff(DLC2Content.Buffs.TeleportOnLowHealth) : false;
-                        if (healthPercent <= (UnstableTransmitter.LowHealth.Value / 100f) && itemCount > 0 && hasBuff)
-                        {
-                            self.body.hasTeleported = true;
-                            self.body.RemoveBuff(DLC2Content.Buffs.TeleportOnLowHealth);
-                            self.body.AddTimedBuff(DLC2Content.Buffs.TeleportOnLowHealthCooldown, UnstableTransmitter.Refresh.Value);
-                            self.body.CallRpcTeleportCharacterToSafety();
-                        }
-                    }
-                    orig(self, damageValue, damagePosition, damageIsSilent, attacker);
-                };
-            }
-
-            // Noxious Thorn #1
-            if (NoxiousThorn.Rework.Value == 1)
-            {
-                // Remove vanilla effect
-                IL.RoR2.HealthComponent.TakeDamageProcess += il =>
-                {
-                    var cursor = new ILCursor(il);
-                    if (cursor.TryGotoNext(
-                        x => x.MatchBle(out _),
-                        x => x.MatchLdcR4(out _),
-                        x => x.MatchLdcR4(out _),
-                        x => x.MatchLdnull(),
-                        x => x.MatchCallOrCallvirt(typeof(Util), nameof(Util.CheckRoll)),
-                        x => x.MatchBrfalse(out _)
-                    ))
-                    {
-                        cursor.EmitDelegate<Func<int, int>>(stack => int.MaxValue);
-                    }
-                    else
-                    {
-                        Logger.LogWarning(NoxiousThorn.StaticName + " #1 - IL Fail #1");
-                    }
-                };
-            }
-
-            // -- Risk of Rain 2 Content -- \\
-
-            // Old War Stealthkit #1
-            if (OldWarStealthKit.Rework.Value == 1)
-            {
-                IL.RoR2.Items.PhasingBodyBehavior.FixedUpdate += il =>
-                {
-                    var cursor = new ILCursor(il);
-                    if (cursor.TryGotoNext(
-                        x => x.MatchLdarg(0),
-                        x => x.MatchCall(typeof(RoR2.Items.BaseItemBodyBehavior), "get_body"),
-                        x => x.MatchLdsfld(typeof(RoR2Content.Buffs), nameof(RoR2Content.Buffs.Cloak))
-                    ))
-                    {
-                        cursor.Emit(OpCodes.Ldarg_0);
-                        cursor.EmitDelegate<Action<RoR2.Items.PhasingBodyBehavior>>(itemBase =>
-                        {
-                            int numBuffs = itemBase.body.activeBuffsListCount;
-                            int itemCount = itemBase.body.inventory.GetItemCount(RoR2Content.Items.Phasing);
-                            int numCleansed = 1 + itemCount;
-                            for (int i = 0; i < numBuffs; i++)
-                            {
-                                BuffDef foundBuff = BuffCatalog.GetBuffDef(itemBase.body.activeBuffsList[i]);
-                                if (foundBuff.isDebuff && numCleansed > 0)
-                                {
-                                    numCleansed--; i--;
-                                    itemBase.body.RemoveBuff(foundBuff);
-                                }
-                                else if (numCleansed <= 0) { break; }
-                            }
-                            if (numCleansed < 1 + itemCount)
-                            {
-                                EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/CleanseEffect"), new EffectData
-                                {
-                                    origin = itemBase.body.transform.position
-                                }, true);
-                            }
-                        });
-                    }
-                    else
-                    {
-                        Logger.LogWarning(OldWarStealthKit.StaticName + " #1 - IL Fail #1");
-                    }
-                };
-            }
-        }
 
         private void SetUpLegendaryItems()
         {

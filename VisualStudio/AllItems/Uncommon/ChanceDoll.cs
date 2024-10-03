@@ -249,7 +249,7 @@ namespace SeekerItems
     public class ShrineFailCount : NetworkBehaviour { public int FailCount; }
     public class KarmaDollBehavior : MonoBehaviour
     {
-        private int ItemCount { get { return (owner && owner.inventory) ? owner.inventory.GetItemCount(DLC2Content.Items.ExtraShrineItem) : 0; } }
+        private int ItemCount { get => (owner && owner.inventory) ? owner.inventory.GetItemCount(DLC2Content.Items.ExtraShrineItem) : 0; }
         private CharacterBody owner;
         public int luckStat;
         private int karmaCount;
@@ -288,7 +288,7 @@ namespace SeekerItems
                 }, true);
             }
         }
-        public void UpdateLuck(int increase = 0) => luckStat = Math.Min(luckStat + increase, ChanceDoll.Karma_Base_Cap.Value * (ItemCount > 0 ? 1 : 0) + ChanceDoll.Karma_Stack_Cap.Value * ItemCount);
+        public void UpdateLuck(int increase = 0) => luckStat = Math.Min(luckStat + increase, ChanceDoll.Karma_Base_Cap.Value * (ItemCount > 0 ? 1 : 0) + ChanceDoll.Karma_Stack_Cap.Value * (ItemCount - 1));
         private void ReattachOwner()
         {
             if (!owner) owner = GetComponent<CharacterMaster>().GetBody();
@@ -335,6 +335,9 @@ namespace SeekerItems
                 trail.widthMultiplier = 1f;
             }
 
+            OrbEffect orbComponent = orbEffect.GetComponent<OrbEffect>();
+            if (orbComponent) orbComponent.onArrival = new UnityEngine.Events.UnityEvent();
+
             new EffectDef()
             {
                 prefab = orbEffect,
@@ -360,6 +363,7 @@ namespace SeekerItems
         }
         public override void OnArrival()
         {
+            base.OnArrival();
             if (karmaBehavior) karmaBehavior.IncreaseKarma();
         }
 

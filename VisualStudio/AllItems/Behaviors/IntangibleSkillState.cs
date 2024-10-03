@@ -9,6 +9,7 @@ namespace EntityStates
         public override void OnEnter()
         {
             base.OnEnter();
+
             int itemCount = characterBody.inventory.GetItemCount(DLC2Content.Items.TeleportOnLowHealth);
             characterGravityParameterProvider = gameObject.GetComponent<ICharacterGravityParameterProvider>();
             characterFlightParameterProvider = gameObject.GetComponent<ICharacterFlightParameterProvider>();

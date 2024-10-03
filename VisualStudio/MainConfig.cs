@@ -289,10 +289,13 @@ namespace SeekerItems
                     new AcceptableValueRange<int>(0, 1)
                 )
             );
-            UnstableTransmitter.IsFloat = plugin.Config.Bind(
+            UnstableTransmitter.Inflict_Type = plugin.Config.Bind(
                 DLC2 + UnstableTransmitter.StaticName,
-                "! Rework #1 - Flight !", true,
-                "[ True = Fly | False = Movement ]\nHeretic flight during intangibility"
+                "! Rework #1 - Type of Damage !", 0,
+                new ConfigDescription(
+                    "[ 0 = Hemorrhage | 1 = Bleed ]",
+                    new AcceptableValueRange<int>(0, 1)
+                )
             );
             UnstableTransmitter.LowHealth = plugin.Config.Bind(
                 DLC2 + UnstableTransmitter.StaticName,
@@ -311,6 +314,11 @@ namespace SeekerItems
                 DLC2 + UnstableTransmitter.StaticName,
                 "! Rework #1 - Range !", 30f,
                 "[ 30.0 = 30 Meters ]\nArea effect"
+            );
+            UnstableTransmitter.IsFloat = plugin.Config.Bind(
+                DLC2 + UnstableTransmitter.StaticName,
+                "! Rework #1 - Flight !", true,
+                "[ True = Fly | False = Movement ]\nHeretic flight during intangibility"
             );
             UnstableTransmitter.Damage_Base = plugin.Config.Bind(
                 DLC2 + UnstableTransmitter.StaticName,
@@ -382,12 +390,12 @@ namespace SeekerItems
             );
             NoxiousThorn.Base_Cap = plugin.Config.Bind(
                 DLC2 + NoxiousThorn.StaticName,
-                "! Rework #1 - Base radius Cap !", 10f,
+                "! Rework #1 - Base Radius Cap !", 10f,
                 "[ 10.0 = 10m ]\nMax ring radius"
             );
             NoxiousThorn.Stack_Cap = plugin.Config.Bind(
                 DLC2 + NoxiousThorn.StaticName,
-                "! Rework #1 - Stack radius Cap !", 4f,
+                "! Rework #1 - Stack Radius Cap !", 4f,
                 "[ 4.0 = +4m ]\nMore max ring radius per stack"
             );
 
@@ -401,6 +409,16 @@ namespace SeekerItems
                     "[ 0 = Vanilla | 1 = Rework #1 ]",
                     new AcceptableValueRange<int>(0, 1)
                 )
+            );
+            OldWarStealthKit.Base_Cleanse = plugin.Config.Bind(
+                RoR2 + OldWarStealthKit.StaticName,
+                "! Rework #1 - Base Cleanse !", 1,
+                "[ 1 = 1 Debuff Cleanse ]\nBase cleanse amount"
+            );
+            OldWarStealthKit.Stack_Cleanse = plugin.Config.Bind(
+                RoR2 + OldWarStealthKit.StaticName,
+                "! Rework #1 - Stack Cleanse !", 1,
+                "[ 1 = +1 Debuff Cleanse ]\nMore cleanse amount per stack"
             );
         }
         public static void LegendaryConfig(BaseUnityPlugin plugin)

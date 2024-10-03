@@ -26,9 +26,8 @@ namespace SeekerItems
         public static string StaticName = "Chronic Expansion";
 
         public static ConfigEntry<int> Rework;
-        public static ConfigEntry<bool> TallyKills;
 
-        public static ConfigEntry<bool> IsHyperbolic;
+        public static ConfigEntry<bool> TallyKills;
         public static ConfigEntry<float> Damage_Base;
         public static ConfigEntry<float> Damage_Stack;
     }
