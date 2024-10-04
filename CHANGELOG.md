@@ -1,4 +1,65 @@
 ### Changelog
+## Version 2.0.0
+- Another **major** re-programming for this mod...
+- Added two new reworks for **Chance Doll**
+<br>- Rework **#1** for near similar functionality
+<br>- Rework **#2** for a more unique functionality
+- Added an actual rework for **Seed of Life**
+<br>- Rework **#1** for letting Seed of Life revive all allies when you revive yourself instead of just yourself
+- Added a config value to disable the mod Logs to not print
+- Miscellaneous code optimizations and stuff
+- Hopefully even less bugs than usual
+
+### Common Tier
+
+* **Warped Echo**
+<br>- Extended default duration
+<br>- VFX sync with set duration
+* **Chronic Expansion**
+<br>- Item display now tallies kill streak <sub><sup> **_( Toggleable via Config )_** </sub></sup>
+* **Knockback Fin**
+<br>- Removed VFX on dealing **Airborne** damage
+<br>- Colored damage on **Airborne** damage <sub><sup> **_( Toggleable via Config )_** </sub></sup>
+<br>- Fixed **NRE** from the Meridian's environmental hazards hitting players
+<br>- Fixed cursed config leaking into Flying Fin description
+<br>- Removed knock CD to provide more increased damage uptime <sub><sup> **_( Configurable Soon )_** </sub></sup>
+* **Bolstering Lantern**
+<br>- Fixed **NRE** from Meridian's environmental hazards hitting players
+<br>- Fixed not properly disabling the original vanilla effect
+* **Antler Shield**
+<br>- Uses``RecalculateAPI`` now <sub><sup> **_( Rework #2 Soon )_** </sub></sup>
+
+### Uncommon Tier
+
+* **Chance Doll**
+<br>- Two new reworks for **Chance Doll**
+* **Sale Star**
+<br>- Nothing new, sorry!
+* **Unstable Transmitter**
+<br>- Config option for **Hemorrhage** instead of **Bleed** <sub><sup> **_( Toggleable via Config )_** </sub></sup>
+<br>- Fixed it not actually activating at the set **health percentage**
+* **Noxious Thorn**
+<br>- Nothing new, sorry!
+* **Old War Stealthkit**
+<br>- Nerfed default value of cleansing **2 debuffs** at base to **1** instead
+<br>- Base number of **debuff** cleansed now configurable
+<br>- Stacking number of **debuff** cleansed now configurable
+
+### Legendary Tier
+
+* **Growth Nectar**
+<br>- Now actually affects the **Armor** stat
+* **War Bonds**
+<br>- VFX on free unlock now configurable
+<br>- Properly made the VFX only activate on **interactables** that cost money
+* **Ben's Raincoat**
+<br>- Nothing new, sorry!
+
+### Equipment
+
+* **Seed of Life**
+<br>- New rework to add more consistency
+
 ## Version 1.4.1
 - Noxious Thorn Rework #1 - Now the VFX is properly networked for multiplayer!
 - Added a new null check for whenever Frost Relic's particle prefab gets modified
