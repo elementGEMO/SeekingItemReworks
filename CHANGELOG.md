@@ -59,6 +59,8 @@
 
 * **Seed of Life**
 <br>- New rework to add more consistency
+* **Seed of Life (Consumed)**
+<br>- Changed name and rewrite description
 
 ## Version 1.4.1
 - Noxious Thorn Rework #1 - Now the VFX is properly networked for multiplayer!
