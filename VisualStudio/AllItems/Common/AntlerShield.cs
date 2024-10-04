@@ -42,7 +42,7 @@ namespace SeekerItems
             if (AntlerShield.Rework.Value == 1)
             {
                 IL.RoR2.HealthComponent.TakeDamageProcess += RemoveEffect;
-                RecalculateStatsAPI.GetStatCoefficients += RecalculateStatsAPI_GetStatCoefficients;
+                RecalculateStatsAPI.GetStatCoefficients += StatCoefficients;
             }
         }
 
@@ -83,7 +83,7 @@ namespace SeekerItems
                 Log.Warning(AntlerShield.StaticName + " #1 - IL Fail #1");
             }
         }
-        private static void RecalculateStatsAPI_GetStatCoefficients(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args)
+        private static void StatCoefficients(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args)
         {
             if (sender && sender.master && sender.master.inventory)
             {

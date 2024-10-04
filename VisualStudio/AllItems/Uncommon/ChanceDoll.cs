@@ -21,10 +21,16 @@ namespace SeekerItems
 
             if (descType == 1)
             {
+                string tierSequence = "Common";
+                if (Max_Upgrade.Value == 1) tierSequence = "Uncommon".Style(FontColor.cIsHealing);
+                if (Max_Upgrade.Value == 2) tierSequence = "Legendary".Style(FontColor.cIsHealth);
+                if (Max_Upgrade.Value == 3) tierSequence = "Boss".Style(FontColor.cIsDamage);
+
                 ItemInfo = "Chance to upgrade the item reward on failing a Shrine.";
                 ItemDesc = string.Format(
-                    "Failing a Shrine increases the chance for the item reward to " + "upgrade ".Style(FontColor.cIsUtility) + "by " + "{0}% ".Style(FontColor.cIsUtility) + "(+{1}% per stack)".Style(FontColor.cStack) + ", up to a " + "Legendary ".Style(FontColor.cIsHealth) + "item.",
-                    RoundVal(Chance_Base.Value), RoundVal(Chance_Stack.Value)
+                    "Failing a Shrine increases the chance for the item reward to " + "upgrade ".Style(FontColor.cIsUtility) + "by " + "{0}% ".Style(FontColor.cIsUtility) + "(+{1}% per stack)".Style(FontColor.cStack) + ", up to a " + "{2} item.",
+                    RoundVal(Chance_Base.Value), RoundVal(Chance_Stack.Value),
+                    tierSequence
                 );
             }
             if (descType == 2)
@@ -34,7 +40,7 @@ namespace SeekerItems
                     RoundVal(Karma_Required.Value)
                 );
                 ItemDesc = string.Format(
-                    "Every " + "{0} ".Style(FontColor.cIsUtility) + "Shrines, all random effects are rerolled " + "+{1} ".Style(FontColor.cIsUtility) + "times for a " + "favorable outcome permanently".Style(FontColor.cIsUtility) + ", up to a " + "maximum ".Style(FontColor.cIsUtility) + "of " + "{2} ".Style(FontColor.cIsUtility) + "(+{3} per stack) ".Style(FontColor.cStack) + "times.",
+                    "When using " + "{0} ".Style(FontColor.cIsUtility) + "Shrines, all random effects are rerolled " + "+{1} ".Style(FontColor.cIsUtility) + "times for a " + "favorable outcome permanently".Style(FontColor.cIsUtility) + ", up to a " + "maximum ".Style(FontColor.cIsUtility) + "of " + "{2} ".Style(FontColor.cIsUtility) + "(+{3} per stack) ".Style(FontColor.cStack) + "times.",
                     RoundVal(Karma_Required.Value), RoundVal(Luck_Per.Value),
                     RoundVal(Karma_Base_Cap.Value), RoundVal(Karma_Stack_Cap.Value)
                 );
@@ -44,6 +50,7 @@ namespace SeekerItems
 
         public static ConfigEntry<int> Rework;
 
+        public static ConfigEntry<int> Max_Upgrade;
         public static ConfigEntry<float> Hidden_Chance;
         public static ConfigEntry<float> Chance_Base;
         public static ConfigEntry<float> Chance_Stack;
@@ -106,24 +113,26 @@ namespace SeekerItems
                     if (Util.CheckRoll(Math.Max(rollChance, ChanceDoll.Hidden_Chance.Value), characterBody.master))
                     {
                         ItemTier minimumTier;
-                        ItemTier foundTier = itemIndex.pickupDef.itemTier;
                         int tierExtraChance = (Util.CheckRoll(rollChance % 100)) ? 1 : 0;
                         double tierAmounts = Math.Round(rollChance / 100);
 
-                        if (tierAmounts > 1 || tierAmounts + tierExtraChance > 1) minimumTier = ItemTier.Tier3;
-                        else if (tierAmounts <= 1) minimumTier = ItemTier.Tier2;
+                        if (ChanceDoll.Max_Upgrade.Value == 3 && tierAmounts + tierExtraChance > 2) minimumTier = ItemTier.Boss;
+                        else if (ChanceDoll.Max_Upgrade.Value >= 2 && tierAmounts + tierExtraChance > 1) minimumTier = ItemTier.Tier3;
+                        else if (ChanceDoll.Max_Upgrade.Value >= 1 && tierAmounts + tierExtraChance <= 1) minimumTier = ItemTier.Tier2;
                         else minimumTier = ItemTier.Tier1;
 
                         List<PickupIndex> commonList = new(Run.instance.availableTier1DropList);
                         List<PickupIndex> uncommonList = new(Run.instance.availableTier2DropList);
                         List<PickupIndex> legendaryList = new(Run.instance.availableTier3DropList);
+                        List<PickupIndex> bossList = new(Run.instance.availableBossDropList);
                         List<PickupIndex> selectList;
 
                         if (minimumTier == ItemTier.Tier1) selectList = commonList;
-                        if (minimumTier == ItemTier.Tier2) selectList = uncommonList;
-                        else selectList = legendaryList;
+                        else if (minimumTier == ItemTier.Tier2) selectList = uncommonList;
+                        else if (minimumTier == ItemTier.Tier3) selectList = legendaryList;
+                        else selectList = bossList;
 
-                        Util.ShuffleList<PickupIndex>(selectList);
+                        Util.ShuffleList(selectList);
                         itemIndex = selectList[0];
 
                         self.chanceDollWin = true;

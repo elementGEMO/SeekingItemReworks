@@ -37,26 +37,27 @@ namespace SeekerItems
             if (UnstableTransmitter.Rework.Value == 1) { SetDesc(new UnstableTransmitter(UnstableTransmitter.Rework.Value)); }
             if (NoxiousThorn.Rework.Value == 1) { SetDesc(new NoxiousThorn(NoxiousThorn.Rework.Value)); }
 
+            // Legendary Tier Items
+            if (GrowthNectar.Rework.Value == 1) { SetDesc(new GrowthNectar(GrowthNectar.Rework.Value)); }
+            if (WarBonds.Rework.Value == 1) { SetDesc(new WarBonds(WarBonds.Rework.Value)); }
+
+            // Equipment Tier
+            if (SeedOfLife.Rework.Value == 1) { SetDesc(new SeedOfLife(SeedOfLife.Rework.Value), "EQUIPMENT_"); }
+            if (SeedOfLifeConsumed.Rework.Value == 1) {
+                SetDesc(new SeedOfLifeConsumed(SeedOfLifeConsumed.Rework.Value), "EQUIPMENT_");
+                SetName(new SeedOfLifeConsumed(SeedOfLifeConsumed.Rework.Value), "Sprouting Life");
+            }
+
             // -- Risk of Rain 2 Content -- \\
 
             // Uncommon Tier Items
             if (OldWarStealthKit.Rework.Value == 1) { SetDesc(new OldWarStealthKit(OldWarStealthKit.Rework.Value)); }
-
-            /*
-            // Legendary Tier Items
-            if (WarBonds.Rework.Value == 1) { SetDesc(new WarBonds(WarBonds.Rework.Value)); }
-            if (GrowthNectar.Rework.Value == 1) { SetDesc(new GrowthNectar(GrowthNectar.Rework.Value)); }
-
-            // Equipment
-            if (SeedOfLife.Rework.Value == 1) { SetDesc(new SeedOfLife(SeedOfLife.Rework.Value), "EQUIPMENT_"); }
-            */
         }
         private static void SetDesc(ItemTemplate ItemInfo, string forcedPrefix = "ITEM_")
         {
             LanguageAPI.Add(forcedPrefix + ItemInfo.ItemInternal + "_PICKUP", ItemInfo.ItemInfo);
             LanguageAPI.Add(forcedPrefix + ItemInfo.ItemInternal + "_DESC", ItemInfo.ItemDesc);
         }
-
         private static void SetName(ItemTemplate ItemInfo, string name, string forcedPrefix = "ITEM_")
         {
             LanguageAPI.Add(forcedPrefix + ItemInfo.ItemInternal + "_NAME", name);

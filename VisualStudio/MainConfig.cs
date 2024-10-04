@@ -219,6 +219,14 @@ namespace SeekerItems
                     new AcceptableValueRange<int>(0, 2)
                 )
             );
+            ChanceDoll.Max_Upgrade = plugin.Config.Bind(
+                DLC2 + ChanceDoll.StaticName,
+                "! Rework #1 - Max Upgrade Tier !", 2,
+                new ConfigDescription(
+                    "[ 0 = Common | 1 = Uncommon | 2 = Legendary | 3 = Boss ]",
+                    new AcceptableValueRange<int>(0, 3)
+                )
+            );
             ChanceDoll.Hidden_Chance = plugin.Config.Bind(
                 DLC2 + ChanceDoll.StaticName,
                 "! Rework #1 - Hidden Chance !", 10f,
@@ -425,36 +433,6 @@ namespace SeekerItems
         {
             // -- Seekers of the Storm Content -- \\
 
-            // War Bonds
-            WarBonds.Rework = plugin.Config.Bind(
-                DLC2 + WarBonds.StaticName,
-                "Toggle Rework", 1,
-                new ConfigDescription(
-                    "[ 0 = Vanilla | 1 = Rework #1 ]",
-                    new AcceptableValueRange<int>(0, 1)
-                )
-            );
-            WarBonds.Purchase_Base = plugin.Config.Bind(
-                DLC2 + WarBonds.StaticName,
-                "! Rework #1 - Purchase Base !", 3,
-                "[ 3 = 3 Purchases ]\nBase purchases"
-            );
-            WarBonds.Purchase_Stack = plugin.Config.Bind(
-                DLC2 + WarBonds.StaticName,
-                "! Rework #1 - Purchase Stack !", 2,
-                "[ 2 = +2 Purchases ]\nPurchases gained per stack"
-            );
-            WarBonds.Experience_Percent_Base = plugin.Config.Bind(
-                DLC2 + WarBonds.StaticName,
-                "! Rework #1 - Base Experience Percent !", 50f,
-                "[ 50.0 = 50% Experience ]\nExperience percent gain"
-            );
-            WarBonds.Experience_Percent_Stack = plugin.Config.Bind(
-                DLC2 + WarBonds.StaticName,
-                "! Rework #1 - Stack Experience Percent !", 25f,
-                "[ 25.0 = +25% Experience ]\nMore experience percent gain per stack"
-            );
-
             // Growth Nectar
             GrowthNectar.Rework = plugin.Config.Bind(
                 DLC2 + GrowthNectar.StaticName,
@@ -490,6 +468,41 @@ namespace SeekerItems
                 "[ 10.0 = +10% Experience ]\nMore max stats per equipment charge per stack"
             );
 
+            // War Bonds
+            WarBonds.Rework = plugin.Config.Bind(
+                DLC2 + WarBonds.StaticName,
+                "Toggle Rework", 1,
+                new ConfigDescription(
+                    "[ 0 = Vanilla | 1 = Rework #1 ]",
+                    new AcceptableValueRange<int>(0, 1)
+                )
+            );
+            WarBonds.Free_Purchase_VFX = plugin.Config.Bind(
+                DLC2 + WarBonds.StaticName,
+                "! Rework #1 - Free Purchase VFX !", true,
+                "[ True = Enabled | False = Original ]\nShows coin VFX when using a free purchase"
+            );
+            WarBonds.Purchase_Base = plugin.Config.Bind(
+                DLC2 + WarBonds.StaticName,
+                "! Rework #1 - Purchase Base !", 3,
+                "[ 3 = 3 Purchases ]\nBase purchases"
+            );
+            WarBonds.Purchase_Stack = plugin.Config.Bind(
+                DLC2 + WarBonds.StaticName,
+                "! Rework #1 - Purchase Stack !", 2,
+                "[ 2 = +2 Purchases ]\nPurchases gained per stack"
+            );
+            WarBonds.Experience_Percent_Base = plugin.Config.Bind(
+                DLC2 + WarBonds.StaticName,
+                "! Rework #1 - Base Experience Percent !", 50f,
+                "[ 50.0 = 50% Experience ]\nExperience percent gain"
+            );
+            WarBonds.Experience_Percent_Stack = plugin.Config.Bind(
+                DLC2 + WarBonds.StaticName,
+                "! Rework #1 - Stack Experience Percent !", 25f,
+                "[ 25.0 = +25% Experience ]\nMore experience percent gain per stack"
+            );
+
             // -- Survivors of the Void Content -- \\
 
             // Ben's Raincoat
@@ -497,7 +510,7 @@ namespace SeekerItems
                 DLC1 + BensRaincoat.StaticName,
                 "Toggle Rework", 1,
                 new ConfigDescription(
-                    "[ 0 = Vanilla | 1 = Rework #1 ]\nNot really a rework. Lets False Son's skill disable allowed to be cleansed.",
+                    "[ 0 = Vanilla | 1 = Rework #1 ]",
                     new AcceptableValueRange<int>(0, 1)
                 )
             );
@@ -510,6 +523,16 @@ namespace SeekerItems
             // Seed of Life
             SeedOfLife.Rework = plugin.Config.Bind(
                 DLC2 + SeedOfLife.StaticName,
+                "Toggle Rework", 1,
+                new ConfigDescription(
+                    "[ 0 = Vanilla | 1 = Rework ]",
+                    new AcceptableValueRange<int>(0, 1)
+                )
+            );
+
+            // Seed of Life (Consumed)
+            SeedOfLifeConsumed.Rework = plugin.Config.Bind(
+                DLC2 + SeedOfLifeConsumed.StaticName,
                 "Toggle Rewrite", 1,
                 new ConfigDescription(
                     "[ 0 = Vanilla | 1 = Rewrite ]",
