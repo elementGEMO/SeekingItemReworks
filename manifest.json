@@ -1,13 +1,15 @@
 {
     "name": "SeekingItemReworks",
-    "version_number": "1.4.1",
+    "version_number": "2.0.0",
     "website_url": "https://github.com/elementGEMO/SeekingItemReworks",
-    "description": "Reworks Seekers of the Storm items & more! Extremely configurable! Noxious Thorn hotfix (VFX in Multiplayer now!). [11/18] + [2]",
+    "description": "Complete reprogram! Reworks Seekers of the Storm items & more! Extremely configurable! Added two Chance Shrine reworks, and a Seed of Life rework.",
     "dependencies": [
         "RiskofThunder-R2API_Core-5.1.1",
         "RiskofThunder-R2API_ContentManagement-1.0.6",
+        "RiskofThunder-R2API_RecalculateStats-1.4.0",
         "RiskofThunder-R2API_Language-1.0.1",
         "RiskofThunder-R2API_Items-1.0.3",
-        "RiskofThunder-R2API_Prefab-1.0.4"
+        "RiskofThunder-R2API_Prefab-1.0.4",
+        "RiskofThunder-R2API_Colors-1.0.1"
     ]
 }
