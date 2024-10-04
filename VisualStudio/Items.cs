@@ -45,7 +45,7 @@ namespace SeekerItems
             if (SeedOfLife.Rework.Value == 1) { SetDesc(new SeedOfLife(SeedOfLife.Rework.Value), "EQUIPMENT_"); }
             if (SeedOfLifeConsumed.Rework.Value == 1) {
                 SetDesc(new SeedOfLifeConsumed(SeedOfLifeConsumed.Rework.Value), "EQUIPMENT_");
-                SetName(new SeedOfLifeConsumed(SeedOfLifeConsumed.Rework.Value), "Sprouting Life");
+                SetName(new SeedOfLifeConsumed(SeedOfLifeConsumed.Rework.Value), "Sprouting Life", "EQUIPMENT_");
             }
 
             // -- Risk of Rain 2 Content -- \\
