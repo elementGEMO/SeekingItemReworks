@@ -108,9 +108,9 @@ namespace SeekerItems
                 if (self.rng.nextNormalizedFloat > self.failureChance)
                 {
                     itemIndex = self.dropTable.GenerateDrop(self.rng);
-                    float rollChance = (itemCount > 0) ? (ChanceDoll.Chance_Base.Value + ChanceDoll.Chance_Stack.Value * (itemCount - 1)) * counter.FailCount : 0;
+                    float rollChance = (ChanceDoll.Chance_Base.Value + ChanceDoll.Chance_Stack.Value * (itemCount - 1)) * counter.FailCount;
 
-                    if (Util.CheckRoll(Math.Max(rollChance, ChanceDoll.Hidden_Chance.Value), characterBody.master))
+                    if (Util.CheckRoll(itemCount > 0 ? Math.Max(rollChance, ChanceDoll.Hidden_Chance.Value) : 0, characterBody.master))
                     {
                         ItemTier minimumTier;
                         int tierExtraChance = (Util.CheckRoll(rollChance % 100)) ? 1 : 0;
@@ -147,7 +147,7 @@ namespace SeekerItems
                         EffectManager.SpawnEffect(self.effectPrefabShrineRewardNormal, new EffectData
                         {
                             origin = self.gameObject.transform.position,
-                            rotation = UnityEngine.Quaternion.identity,
+                            rotation = Quaternion.identity,
                             scale = 3f,
                             color = self.colorShrineRewardJackpot
                         }, true);

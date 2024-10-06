@@ -18,7 +18,7 @@ namespace SeekingItemReworks
         public const string PluginGUID = PluginAuthor + "." + PluginName;
         public const string PluginAuthor = "noodlegemo";
         public const string PluginName = "SeekingItemReworks";
-        public const string PluginVersion = "2.0.0";
+        public const string PluginVersion = "2.0.1";
         public void Awake()
         {
             //On.RoR2.Networking.NetworkManagerSystemSteam.OnClientConnect += (s, u, t) => { }; - Used for Solo Multiplayer testing

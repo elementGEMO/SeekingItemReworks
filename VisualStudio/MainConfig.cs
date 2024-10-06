@@ -328,15 +328,20 @@ namespace SeekerItems
                 "! Rework #1 - Flight !", true,
                 "[ True = Fly | False = Movement ]\nHeretic flight during intangibility"
             );
+            UnstableTransmitter.Per_Tick = plugin.Config.Bind(
+                DLC2 + UnstableTransmitter.StaticName,
+                "! Rework #1 - Tick Instances !", 10,
+                "[ 10.0 = 10 Ticks ]\nHow much instances of damage when inflicting"
+            );
             UnstableTransmitter.Damage_Base = plugin.Config.Bind(
                 DLC2 + UnstableTransmitter.StaticName,
-                "! Rework #1 - Base Damage !", 150f,
-                "[ 150.0 = 150% Base Damage ]\nBleed base damage"
+                "! Rework #1 - Base Damage !", 200f,
+                "[ 200.0 = 200% Base Damage ]\nBleed base damage"
             );
             UnstableTransmitter.Damage_Stack = plugin.Config.Bind(
                 DLC2 + UnstableTransmitter.StaticName,
-                "! Rework #1 - Stack Damage !", 150f,
-                "[ 150.0 = +150% Base Damage ]\nBleed base damage per stack"
+                "! Rework #1 - Stack Damage !", 200f,
+                "[ 200.0 = +200% Base Damage ]\nBleed base damage per stack"
             );
             UnstableTransmitter.Duration_Base = plugin.Config.Bind(
                 DLC2 + UnstableTransmitter.StaticName,

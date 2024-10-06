@@ -30,8 +30,9 @@ namespace SeekerItems
                     sequenceDoT
                 );
                 ItemDesc = string.Format(
-                    "Falling below " + "{0}% health ".Style(FontColor.cIsHealth) + "causes you to fade away, becoming " + "intangible ".Style(FontColor.cIsUtility) + "and exploding, {1} " + "enemies within " + "{2}m ".Style(FontColor.cIsDamage) + "for " + "{3}% ".Style(FontColor.cIsDamage) + "(+{4}% per stack) ".Style(FontColor.cStack) + "base damage. Lasts " + "{5}s ".Style(FontColor.cIsUtility) + "(+{6}s per stack)".Style(FontColor.cStack) + ". Recharges every " + "{7} ".Style(FontColor.cIsUtility) + "seconds.",
-                    LowHealth.Value, sequenceDotColor, RoundVal(Range.Value),
+                    "Falling below " + "{0}% health ".Style(FontColor.cIsHealth) + "causes you to fade away, becoming " + "intangible ".Style(FontColor.cIsUtility) + "and exploding, {1} " + "enemies within " + "{2}m ".Style(FontColor.cIsDamage) + "for " + "{3}x{4}% ".Style(FontColor.cIsDamage) + "(+{5}% per stack) ".Style(FontColor.cStack) + "base damage. Lasts " + "{6}s ".Style(FontColor.cIsUtility) + "(+{7}s per stack)".Style(FontColor.cStack) + ". Recharges every " + "{8} ".Style(FontColor.cIsUtility) + "seconds.",
+                    LowHealth.Value, sequenceDotColor,
+                    RoundVal(Range.Value), Per_Tick.Value,
                     RoundVal(Damage_Base.Value), RoundVal(Damage_Stack.Value),
                     RoundVal(Duration_Base.Value), RoundVal(Duration_Stack.Value),
                     RoundVal(Refresh.Value)
@@ -49,6 +50,7 @@ namespace SeekerItems
         public static ConfigEntry<float> Range;
         public static ConfigEntry<bool> IsFloat;
 
+        public static ConfigEntry<int> Per_Tick;
         public static ConfigEntry<float> Damage_Base;
         public static ConfigEntry<float> Damage_Stack;
         public static ConfigEntry<float> Duration_Base;
@@ -95,16 +97,21 @@ namespace SeekerItems
                 CharacterBody victim = hurtBox.healthComponent.body;
                 if (hurtBox && hurtBox.healthComponent && hurtBox.healthComponent.alive && victim)
                 {
+                    float dotMod = 4f;
                     DotController.DotIndex dotType = DotController.DotIndex.SuperBleed;
                     if (UnstableTransmitter.Inflict_Type.Value == 2) dotType = DotController.DotIndex.Bleed;
+
+                    float itemMod = (UnstableTransmitter.Damage_Base.Value + UnstableTransmitter.Duration_Stack.Value * (itemCount - 1)) / 100f;
+                    Log.Debug(itemMod);
+                    Log.Debug(itemMod / dotMod);
 
                     InflictDotInfo bleedDot = new()
                     {
                         attackerObject = self.gameObject,
                         victimObject = victim.gameObject,
                         dotIndex = dotType,
-                        damageMultiplier = self.damage * (UnstableTransmitter.Damage_Base.Value + UnstableTransmitter.Damage_Stack.Value * (itemCount - 1)) / 100f,
-                        duration = 2.5f
+                        damageMultiplier = self.damage * itemMod / dotMod,
+                        duration = 2.5f * UnstableTransmitter.Per_Tick.Value / 10f
                     };
                     DotController.InflictDot(ref bleedDot);
                 }

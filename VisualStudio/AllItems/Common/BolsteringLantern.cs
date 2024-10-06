@@ -58,7 +58,6 @@ namespace SeekerItems
     {
         public static void Init()
         {
-            Log.Debug(BolsteringLantern.Rework.Value);
             if (BolsteringLantern.Rework.Value != 0)
             {
                 IL.RoR2.CharacterBody.RecalculateStats += RemoveEffect;
