@@ -1,4 +1,19 @@
 ### Changelog
+## Version 2.0.1
+
+### Common Tier
+* **Bolstering Lantern**
+<br>- Removed the debug message to see what rework value it has
+
+### Uncommon Tier
+* **Chance Doll** <sub><sup> _**Rework #1**_ </sub></sup>
+<br>- Fixed Chance Doll upgrading Chance Shrines without having the item itself
+* **Unstable Transmitter** <sub><sup> _**Rework #1**_ </sub></sup>
+<br>- Actual predictable scaling value now <sub><sup> **10x200% _(+200% per stack)_** </sub></sup>
+<br>- Slightly buffed the default damage values now that it properly does the right amount of damage
+<br> <sup> _... It used to be enough to kill one phase of Mithrix ..._ </sup>
+<br>- Slightly buffed the default range value
+
 ## Version 2.0.0
 - Another **major** re-programming for this mod...
 - Added two new reworks for **Chance Doll**
